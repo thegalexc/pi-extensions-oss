@@ -1,0 +1,50 @@
+{
+  "name": "pi-extensions-oss",
+  "version": "0.1.15",
+  "description": "Open-source Pi extensions from GalexC, featuring the session-notes Pi extension",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-coding-agent",
+    "productivity",
+    "terminal-ui",
+    "session-notes",
+    "notes",
+    "tui",
+    "developer-tools"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thegalexc/pi-extensions-oss.git"
+  },
+  "homepage": "https://github.com/thegalexc/pi-extensions-oss",
+  "bugs": {
+    "url": "https://github.com/thegalexc/pi-extensions-oss/issues"
+  },
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "public"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.64.0",
+    "@mariozechner/pi-tui": "^0.64.0",
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.3"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ]
+  }
+}
