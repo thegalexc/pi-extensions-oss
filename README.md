@@ -1,23 +1,17 @@
-# Session Notes for Pi
+# pi-extensions-oss
 
-A zero-token session scratchpad for Pi.
+Extensions for the [Pi coding agent](https://pi.ai) that make sessions more resilient and productive.
 
 `session-notes` keeps important notes visible above the editor and lets you capture assistant messages into an interleaved timeline without spending context tokens.
 
-## Demo
+## Extensions
 
-### Looping teaser
+| Extension | What it does |
+|---|---|
+| [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
+| [`safe-screenshot`](#safe-screenshot) | Prevents session crashes from oversized full-page screenshots |
 
-![Session Notes demo](public/session-notes-demo.gif)
-
-### Persistent panel
-
-![Session Notes panel screenshot](public/session-notes-panel-screenshot.png)
-
-### Timeline picker
-
-![Session Notes timeline screenshot](public/session-notes-screenshot.png)
-
+---
 
 ## session-notes
 
@@ -66,6 +60,32 @@ It is built for the moment when a session is going well, useful snippets are fly
 - **IDs are session-local.** A fresh session starts at note 1 again.
 - **Ordering is chronological.** The picker interleaves notes and assistant messages by session timing.
 
+## safe-screenshot
+
+`safe-screenshot` intercepts the built-in `screenshot` tool and prevents sessions from crashing when a full-page capture would exceed Claude's 8000px image height limit.
+
+The extension is transparent — you call `screenshot` exactly as before. When `fullPage` is not explicitly `false`, the extension clamps the capture to viewport-only mode and appends a note to the result explaining what happened and how to capture a specific section.
+
+### Highlights
+
+- zero config, works globally across all projects
+- no change to how you call `screenshot`
+- safe threshold: 7500px (500px headroom under Claude's hard limit)
+- viewport default: 900px tall
+- result note tells the agent what was clamped and how to re-request sections
+
+### Behavior
+
+| Condition | Behavior |
+|---|---|
+| `fullPage: false` explicitly set | passes through unchanged |
+| `fullPage` unset or `true`, page fits (≤ 7500px) | passes through — the clamp still applies since height can't be probed without Playwright; viewport capture at 900px |
+| `fullPage` unset or `true` | clamped to `fullPage: false`, height 900px; result includes a note |
+
+> **Note:** The extension can't probe actual page height before capture (Playwright is not exposed to the extension API). It conservatively clamps all full-page requests. To capture a tall page in sections, call `screenshot` with `fullPage: false` and explicit `height` + scroll offset, or use URL `#anchor` navigation.
+
+---
+
 ## Install
 
 ### From GitHub
@@ -105,7 +125,8 @@ The extension leans into terminal-safe rendering choices:
 ```text
 pi-extensions-oss/
 ├── extensions/
-│   └── session-notes.ts
+│   ├── session-notes.ts
+│   └── safe-screenshot.ts
 ├── package.json
 ├── tsconfig.json
 ├── CLAUDE.md

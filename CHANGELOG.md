@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.19
+
+- new safe-screenshot extension: intercepts full-page screenshots to prevent exceeding Claude's 8000px image height limit
+- clamps fullPage captures to viewport-only mode (900px default) and annotates tool results with guidance
+
 ## 0.1.11
 
 - custom colored picker rows for session-notes
