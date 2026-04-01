@@ -13,4 +13,5 @@ Open-source Pi extension repo for GalexC.
 - Treat this repo as a product, not a scratchpad. Keep names, copy, and defaults clean and user-facing.
 - Keep public extensions self-contained. Do not introduce repo-private dependencies unless they are also published here.
 - Run `pi update` locally after publish-worthy changes when verifying install behavior.
+- **Push to both remotes after every release.** `pi update` pulls from Forgejo (`git.crested-altair.ts.net/gilman/pi-extensions-oss`), not GitHub. The working copy has `origin` (GitHub) and `forgejo` as remotes. Always push to both: `git push origin && git push forgejo`. Pushing only to GitHub means `pi update` silently stays on the old version.
 - No em dashes in file output.
