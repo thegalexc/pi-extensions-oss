@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
   "version": "0.1.19",
-  "description": "Session Notes for Pi - a zero-token session scratchpad with a persistent panel and interleaved note/message timeline",
+  "description": "Productivity and resilience extensions for Pi: session notes scratchpad and safe screenshot guard",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -10,6 +10,7 @@
     "terminal-ui",
     "session-notes",
     "notes",
+    "screenshot",
     "tui",
     "developer-tools"
   ],
