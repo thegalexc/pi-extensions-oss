@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.17",
-  "description": "Open-source Pi extensions from GalexC, featuring the session-notes Pi extension",
+  "version": "0.1.18",
+  "description": "Session Notes for Pi - a zero-token session scratchpad with a persistent panel and interleaved note/message timeline",
   "keywords": [
     "pi-package",
     "pi-extension",

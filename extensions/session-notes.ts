@@ -22,7 +22,7 @@
  *   Ctrl+Alt+-    - Contract panel height (-2 lines, min 3)
  *
  * Command:
- *   /pin - Open the note timeline picker (same as Ctrl+Alt+K)
+ *   /session-notes - Open the session notes timeline picker (same as Ctrl+Alt+K)
  */
 
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
@@ -118,7 +118,7 @@ class PinWidgetComponent {
 			? ` ${canUp ? "▲" : "·"} ${scroll + 1}–${Math.min(scroll + maxLines, total)}/${total} ${canDown ? "▼" : "·"} `
 			: "";
 		const scrollPosPart = scrollPosRaw ? theme.fg("warning", scrollPosRaw) : "";
-		const hintRaw = " ^⌥↑U/↓D:scroll  ^⌥+/-:size  ^⌥E:edit  ^⌥K/pin:notes  ^⌥X:clear  ^⌥H:hide ";
+		const hintRaw = " ^⌥↑U/↓D:scroll  ^⌥+/-:size  ^⌥E:edit  ^⌥K/session-notes  ^⌥X:clear  ^⌥H:hide ";
 		const hintPart = theme.fg("dim", hintRaw);
 
 		const fixedWidth = visibleWidth(edgePart) + visibleWidth(titlePart) + visibleWidth(notePart)
@@ -394,7 +394,7 @@ export default function (pi: ExtensionAPI) {
 		},
 	});
 
-	// ── Picker (shared by Ctrl+Alt+K and /pin) ─────────────────────────────────────
+	// ── Picker (shared by Ctrl+Alt+K and /session-notes) ───────────────────────────
 
 	const openPicker = async (ctx: ExtensionContext) => {
 		const branch = ctx.sessionManager.getBranch();
@@ -457,7 +457,7 @@ export default function (pi: ExtensionAPI) {
 				container.addChild(new Text("", 1, 0));
 				container.addChild(new Text("", 1, 0));
 				container.addChild(new Text(
-					theme.fg("dim", "↑↓ navigate  •  [pin] enter: pin or edit  •  esc: view"),
+					theme.fg("dim", "↑↓ navigate  •  enter: add, pin, or edit  •  esc: view"),
 					1, 0,
 				));
 				container.addChild(new DynamicBorder((s: string) => theme.fg("accent", s)));
@@ -575,12 +575,12 @@ export default function (pi: ExtensionAPI) {
 		},
 	});
 
-	// ── /pin: Opens the picker (same as Ctrl+Alt+K) ──────────────────────────────
+	// ── /session-notes: Opens the picker (same as Ctrl+Alt+K) ────────────────────
 
-	pi.registerCommand("pin", {
-		description: "✎ Open the note timeline picker",
+	pi.registerCommand("session-notes", {
+		description: "Open the session notes timeline to add a note, pin an assistant message, edit existing notes, or review the chronological note/message history.",
 		handler: async (_args, ctx) => {
-			if (!ctx.hasUI) { ctx.ui.notify("/pin requires interactive mode", "error"); return; }
+			if (!ctx.hasUI) { ctx.ui.notify("/session-notes requires interactive mode", "error"); return; }
 			await openPicker(ctx);
 		},
 	});

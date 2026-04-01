@@ -2,7 +2,7 @@
 
 A zero-token session scratchpad for Pi.
 
-`session-notes` keeps important notes visible above the editor and lets you pin assistant messages into an interleaved timeline without spending context tokens.
+`session-notes` keeps important notes visible above the editor and lets you capture assistant messages into an interleaved timeline without spending context tokens.
 
 ## Demo
 
@@ -49,7 +49,7 @@ It is built for the moment when a session is going well, useful snippets are fly
 
 | Action | Shortcut / Command |
 | --- | --- |
-| Open timeline picker | `Ctrl+Alt+K` or `/pin` |
+| Open timeline picker | `Ctrl+Alt+K` or `/session-notes` |
 | Edit active note | `Ctrl+Alt+E` |
 | Hide or show panel | `Ctrl+Alt+H` |
 | Clear active note content | `Ctrl+Alt+X` |
