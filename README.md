@@ -116,7 +116,7 @@ pi-extensions-oss/
 
 Near-term polish still worth doing:
 
-- cut a tagged first release
+- ~~cut a tagged first release~~
 
 ## License
 

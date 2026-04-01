@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Open-source Pi extensions from GalexC, featuring the session-notes Pi extension",
   "keywords": [
     "pi-package",
