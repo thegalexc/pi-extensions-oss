@@ -38,6 +38,7 @@ It is built for the moment when a session is going well, useful snippets are fly
 
 ### What it is good for
 
+- adding simple session objective reminders
 - keeping a short plan visible while you continue coding
 - pinning a useful assistant response before the conversation moves on
 - jotting down a quick human note for later in the same session
@@ -71,12 +72,6 @@ It is built for the moment when a session is going well, useful snippets are fly
 
 ```bash
 pi install git:github.com/thegalexc/pi-extensions-oss
-```
-
-### Local development install
-
-```bash
-pi install /Users/callsen/Documents/ai/pi-extensions-oss
 ```
 
 After installation, restart Pi or run `/reload` in an active session.
