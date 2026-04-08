@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.21
+
+- update development dependencies to `@mariozechner/pi-coding-agent` and `@mariozechner/pi-tui` `^0.66.0`
+- session-notes: migrate session lifecycle handling from removed `session_switch` and `session_fork` events to `session_start`
+- safe-screenshot: clear clamped tool-call state on `session_start` instead of removed `session_switch`
+- validate compatibility with pi 0.66.0
+
 ## 0.1.20
 
 - safe-screenshot: add height guard for `fullPage: false` + oversized height (was passing through unprotected)
