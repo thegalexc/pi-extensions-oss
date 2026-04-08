@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Productivity and resilience extensions for Pi: session notes scratchpad and safe screenshot guard",
   "keywords": [
     "pi-package",
@@ -38,8 +38,8 @@
     "@mariozechner/pi-tui": "*"
   },
   "devDependencies": {
-    "@mariozechner/pi-coding-agent": "^0.64.0",
-    "@mariozechner/pi-tui": "^0.64.0",
+    "@mariozechner/pi-coding-agent": "^0.66.0",
+    "@mariozechner/pi-tui": "^0.66.0",
     "@types/node": "^24.5.2",
     "typescript": "^5.9.3"
   },

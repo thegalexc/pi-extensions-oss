@@ -96,10 +96,11 @@ export default function (pi: ExtensionAPI) {
 		};
 	});
 
-	// Clean up any orphaned toolCallIds when sessions end or switch, so the
-	// Map doesn't accumulate entries from calls that never produced a result.
+	// Clean up any orphaned toolCallIds when sessions end or the active session
+	// changes, so the Map doesn't accumulate entries from calls that never
+	// produced a result.
 	const clearClamped = () => clamped.clear();
 	pi.on("session_end" as any, clearClamped);
-	pi.on("session_switch" as any, clearClamped);
+	pi.on("session_start", async () => clearClamped());
 	pi.on("session_tree" as any, clearClamped);
 }

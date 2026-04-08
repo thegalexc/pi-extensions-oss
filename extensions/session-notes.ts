@@ -369,8 +369,6 @@ export default function (pi: ExtensionAPI) {
 	// ── Session lifecycle ────────────────────────────────────────────────────────
 
 	pi.on("session_start", async (_e, ctx) => reconstructState(ctx));
-	pi.on("session_switch", async (_e, ctx) => reconstructState(ctx));
-	pi.on("session_fork", async (_e, ctx) => reconstructState(ctx));
 	pi.on("session_tree", async (_e, ctx) => reconstructState(ctx));
 
 	// ── Ctrl+Alt+E: Edit active note directly ────────────────────────────────────
