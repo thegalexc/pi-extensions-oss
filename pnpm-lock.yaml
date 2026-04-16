@@ -8,12 +8,18 @@ importers:
 
   .:
     devDependencies:
+      '@mariozechner/pi-ai':
+        specifier: ^0.66.0
+        version: 0.66.0(ws@8.20.0)(zod@4.3.6)
       '@mariozechner/pi-coding-agent':
         specifier: ^0.66.0
         version: 0.66.0(ws@8.20.0)(zod@4.3.6)
       '@mariozechner/pi-tui':
         specifier: ^0.66.0
         version: 0.66.0
+      '@sinclair/typebox':
+        specifier: ^0.34.41
+        version: 0.34.49
       '@types/node':
         specifier: ^24.5.2
         version: 24.12.0
@@ -564,6 +570,7 @@ packages:
   basic-ftp@5.2.0:
     resolution: {integrity: sha512-VoMINM2rqJwJgfdHq6RiUudKt2BV+FY5ZFezP/ypmwayk68+NzzAQy4XXLlqsGD4MCzq3DrmNFD/uUmBJuGoXw==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.1, please upgrade
 
   bignumber.js@9.3.1:
     resolution: {integrity: sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==}

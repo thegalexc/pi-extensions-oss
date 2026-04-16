@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `safe-screenshot` prevents session crashes from oversized full-page captures.
+`session-notes` keeps important context visible above the editor without spending context tokens. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive.
 
 ## Extensions
 
@@ -10,6 +10,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 |---|---|
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
 | [`safe-screenshot`](#safe-screenshot) | Prevents session crashes from oversized full-page screenshots |
+| [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 
 ---
 
@@ -101,6 +102,34 @@ The extension is transparent - you call `screenshot` exactly as before. When `fu
 
 ---
 
+## todo
+
+`todo` is a lightweight in-session todo tracker adapted from Pi's upstream `examples/extensions/todo.ts`.
+
+It is intentionally small. The model gets a `todo` tool for `list`, `add`, `toggle`, and `clear`. You get a `/todo` command that opens an interactive viewer.
+
+### Highlights
+
+- branch-aware state reconstruction from tool result details
+- no repo files and no external storage
+- custom tool rendering for compact call and result display
+- good fit for short-lived execution tracking inside one Pi session
+- simple mental model with the obvious `/todo` command
+
+### What it is good for
+
+- keeping a short execution checklist during a coding session
+- tracking 3 to 10 session-scoped tasks without creating a `TODO.md`
+- letting the agent mark progress while preserving branch semantics
+- experimenting with a first-class todo primitive before building a larger planning workflow
+
+### Commands and tool
+
+| Surface | Purpose |
+| --- | --- |
+| `todo` tool | model-managed `list`, `add`, `toggle`, `clear` actions |
+| `/todo` | open the interactive todo viewer |
+
 ## Install
 
 ```bash
@@ -138,8 +167,10 @@ The extension leans into terminal-safe rendering choices:
 ```text
 pi-extensions-oss/
 ├── extensions/
+│   ├── safe-screenshot.ts
 │   ├── session-notes.ts
-│   └── safe-screenshot.ts
+│   └── todo.ts
+├── CHANGELOG.md
 ├── package.json
 ├── tsconfig.json
 ├── CLAUDE.md

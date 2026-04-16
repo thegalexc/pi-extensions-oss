@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.22
+
+- new `todo` extension adapted from Pi's upstream `examples/extensions/todo.ts`
+- add branch-aware session todo tool with custom rendering and interactive `/todo` viewer
+- use the obvious `/todo` command for the user-facing viewer
+
 ## 0.1.21
 
 - update development dependencies to `@mariozechner/pi-coding-agent` and `@mariozechner/pi-tui` `^0.66.0`
