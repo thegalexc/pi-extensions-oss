@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive.
+`session-notes` keeps important context visible above the editor without spending context tokens. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -11,6 +11,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
 | [`safe-screenshot`](#safe-screenshot) | Prevents session crashes from oversized full-page screenshots |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
+| `status` | Package-level footer status chip showing the loaded OSS version |
 
 ---
 
@@ -169,6 +170,7 @@ pi-extensions-oss/
 ├── extensions/
 │   ├── safe-screenshot.ts
 │   ├── session-notes.ts
+│   ├── status.ts
 │   └── todo.ts
 ├── CHANGELOG.md
 ├── package.json

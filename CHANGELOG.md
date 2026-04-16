@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.23
+
+- add package-level `status.ts` extension that shows `oss v<version>` in Pi's footer status area
+- align the OSS package with the clearer dedicated status-module pattern now used in Forge
+
 ## 0.1.22
 
 - new `todo` extension adapted from Pi's upstream `examples/extensions/todo.ts`
