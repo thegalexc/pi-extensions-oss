@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "Productivity and resilience extensions for Pi: session notes scratchpad, safe screenshot guard, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
@@ -34,6 +34,9 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit"
+  },
+  "overrides": {
+    "basic-ftp": "5.3.0"
   },
   "peerDependencies": {
     "@mariozechner/pi-ai": "*",
