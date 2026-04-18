@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.26
+
+- bump Pi development dependency pins to `^0.67.6` to align with the current 0.67.x Pi line
+- bump `@sinclair/typebox` to `^0.34.48` for local alignment with current Pi-adjacent packages
+
 ## 0.1.23
 
 - add package-level `status.ts` extension that shows `oss v<version>` in Pi's footer status area
