@@ -2,13 +2,14 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
 | Extension | What it does |
 |---|---|
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
+| [`aside`](#aside) | Tool-free side-question overlay with bounded current-session context |
 | [`safe-screenshot`](#safe-screenshot) | Prevents session crashes from oversized full-page screenshots |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | `status` | Package-level footer status chip showing the loaded OSS version |
@@ -75,6 +76,47 @@ It is built for the moment when a session is going well, useful snippets are fly
 - **Entries are append-only.** You can clear content, but the entry itself stays in history.
 - **IDs are session-local.** A fresh session starts at note 1 again.
 - **Ordering is chronological.** The picker interleaves notes and assistant messages by session timing.
+
+---
+
+## aside
+
+`/aside` opens a temporary overlay for one side question without writing that exchange into the main transcript by default.
+
+It is intentionally narrow:
+
+- single-shot, not multi-turn chat
+- tool-free, with no filesystem or shell access
+- bounded to current-session context only
+- editor-first for promotion back into the main workflow
+
+### What it is good for
+
+- clarifying the latest turn
+- asking "why did you say that?"
+- checking the agent's assumptions without derailing the main thread
+- getting a short side answer while keeping the main transcript clean
+
+### What it does not do
+
+- no `read`, `bash`, or repo inspection
+- no live filesystem access
+- no automatic transcript insertion
+- no persistent aside history
+- no fork or branch creation
+
+If you need file inspection, shell commands, or edits, use `/fork` instead.
+
+### Controls
+
+| Action | Shortcut / Command |
+| --- | --- |
+| Open aside | `/aside` or `/aside <question>` |
+| Retry last aside request | `Enter` |
+| Insert into editor | `i` |
+| Close or cancel | `Esc` |
+
+See [`extensions/aside/README.md`](extensions/aside/README.md) for the full workflow diagram, access model, and non-goals.
 
 ---
 

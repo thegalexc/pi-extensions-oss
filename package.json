@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.26",
-  "description": "Productivity and resilience extensions for Pi: session notes scratchpad, safe screenshot guard, branch-aware todos, and OSS version status",
+  "version": "0.1.27",
+  "description": "Productivity and resilience extensions for Pi: session notes scratchpad, aside side-question overlay, safe screenshot guard, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -9,6 +9,7 @@
     "productivity",
     "terminal-ui",
     "session-notes",
+    "aside",
     "notes",
     "screenshot",
     "todo",

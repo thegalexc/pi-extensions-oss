@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.27
+
+- new `aside` extension: token-efficient side-question overlay for Pi
+- tool-free, single-shot aside flow with bounded current-session context only
+- editor-first promotion flow that does not write to the main transcript by default
+- extension-scoped README documenting workflow, access model, and non-goals
+
 ## 0.1.26
 
 - bump Pi development dependency pins to `^0.67.6` to align with the current 0.67.x Pi line
