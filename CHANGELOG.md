@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- screenshots-picker: add delete feedback notification after single-file removal
+- screenshots-picker docs: clarify `~/.pi/agent/settings.json` config path, add CleanShot filename recognition, and recommend `~/Desktop` as the clean default source
+
 ## 0.2.0
 
 - add `browser-screenshot`, a self-contained Playwright-backed `screenshot` tool for webpage capture and visual QA
