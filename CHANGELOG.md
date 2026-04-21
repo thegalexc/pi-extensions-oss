@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- screenshots-picker: add a protocol-aware iTerm2 preview path instead of relying on Kitty image deletion semantics
+- screenshots-picker: use measured terminal cell dimensions for preview sizing instead of hardcoded 9x18 assumptions
+- screenshots-picker: keep Kitty inspector behavior unchanged while making iTerm2 preview rendering more stable
+
 ## 0.2.1
 
 - screenshots-picker: add delete feedback notification after single-file removal
