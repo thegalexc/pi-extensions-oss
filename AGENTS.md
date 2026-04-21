@@ -13,5 +13,5 @@ Open-source Pi extension repo for GalexC.
 - Treat this repo as a product, not a scratchpad. Keep names, copy, and defaults clean and user-facing.
 - Keep public extensions self-contained. Do not introduce repo-private dependencies unless they are also published here.
 - Run `pi update` locally after publish-worthy changes when verifying install behavior.
-- **Verify remotes before pushing.** `pi update` must be able to pull the published package from the repo's actual install remote. Do not assume remote names like `origin` or `forgejo` - check `git remote -v` in the current clone and push to the configured install remote(s).
+- **Push to `origin` after every release.** `pi update` pulls from this repo's `origin` remote. Do not push to additional remotes unless explicitly asked.
 - No em dashes in file output.
