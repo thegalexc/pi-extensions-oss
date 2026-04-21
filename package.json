@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.1.27",
-  "description": "Productivity and resilience extensions for Pi: session notes scratchpad, aside side-question overlay, safe screenshot guard, branch-aware todos, and OSS version status",
+  "version": "0.2.0",
+  "description": "Productivity and resilience extensions for Pi: session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -15,7 +15,10 @@
     "todo",
     "todos",
     "tui",
-    "developer-tools"
+    "developer-tools",
+    "screenshot-picker",
+    "playwright",
+    "browser-automation"
   ],
   "license": "MIT",
   "repository": {
@@ -39,13 +42,19 @@
   "overrides": {
     "basic-ftp": "5.3.0"
   },
+  "dependencies": {
+    "glob": "^11.0.0",
+    "playwright": "^1.58.2"
+  },
   "peerDependencies": {
+    "@mariozechner/pi-agent-core": "*",
     "@mariozechner/pi-ai": "*",
     "@mariozechner/pi-coding-agent": "*",
     "@mariozechner/pi-tui": "*",
     "@sinclair/typebox": "*"
   },
   "devDependencies": {
+    "@mariozechner/pi-agent-core": "^0.67.6",
     "@mariozechner/pi-ai": "^0.67.6",
     "@mariozechner/pi-coding-agent": "^0.67.6",
     "@mariozechner/pi-tui": "^0.67.6",

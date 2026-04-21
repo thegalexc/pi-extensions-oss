@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `safe-screenshot` prevents session crashes from oversized full-page captures. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -10,7 +10,8 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 |---|---|
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
 | [`aside`](#aside) | Tool-free side-question overlay with bounded current-session context |
-| [`safe-screenshot`](#safe-screenshot) | Prevents session crashes from oversized full-page screenshots |
+| [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
+| [`screenshots-picker`](#screenshots-picker) | Browse, stage, and auto-attach recent screenshots from inside Pi |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | `status` | Package-level footer status chip showing the loaded OSS version |
 
@@ -120,28 +121,60 @@ See [`extensions/aside/README.md`](extensions/aside/README.md) for the full work
 
 ---
 
-## safe-screenshot
+## screenshots-picker
 
-`safe-screenshot` intercepts the built-in `screenshot` tool and prevents sessions from crashing when a full-page capture would exceed Claude's 8000px image height limit.
+`screenshots-picker` adds a fast screenshot browser to Pi so you can stage screenshots first and let them attach automatically on your next message.
 
-The extension is transparent - you call `screenshot` exactly as before. When `fullPage` is not explicitly `false`, the extension clamps the capture to viewport-only mode and appends a note to the result explaining what happened and how to capture a specific section.
+It is a port of [Graffioh/pi-screenshots-picker](https://github.com/Graffioh/pi-screenshots-picker) by Graffioh, included here with full attribution under the original MIT license.
 
 ### Highlights
 
-- zero config, works globally across all projects
-- no change to how you call `screenshot`
-- safe threshold: 7500px (500px headroom under Claude's hard limit)
-- viewport default: 900px tall
-- result note tells the agent what was clamped and how to re-request sections
+- `/ss` opens a visual screenshot picker
+- `Ctrl+Shift+S` opens the picker directly
+- stage multiple screenshots with `s` or `space`
+- staged screenshots attach automatically on the next send
+- `/ss-clear` or `Ctrl+Shift+X` clears staged screenshots
+- multiple source directories or glob patterns supported
+- thumbnail previews in image-capable terminals
 
-### Behavior
+See [`extensions/screenshots-picker/README.md`](extensions/screenshots-picker/README.md) for configuration, keys, and attribution details.
+
+---
+
+## browser-screenshot
+
+`browser-screenshot` adds a Playwright-backed `screenshot` tool to Pi for webpage capture and visual QA.
+
+The extension is self-contained. It registers the `screenshot` tool, sanitizes malformed image result blocks, and clamps risky captures before they can produce oversized images.
+
+### Highlights
+
+- one install gives you the full `screenshot` tool surface
+- Playwright-backed webpage capture from a URL
+- safe-by-default clamping for risky full-page or oversized viewport captures
+- inline image return when size limits allow, with disk fallback when they do not
+- no private GalexC dependencies
+
+### Tool parameters
+
+| Parameter | Purpose |
+|---|---|
+| `url` | webpage URL, including protocol |
+| `outputPath` | PNG output path, resolved relative to the current working directory |
+| `width` | viewport width, default `1280` |
+| `height` | viewport height when `fullPage=false`, default `900` |
+| `fullPage` | full-page capture toggle, default `true` |
+
+### Built-in safety behavior
 
 | Condition | Behavior |
 |---|---|
-| `fullPage: false` explicitly set | passes through unchanged |
-| `fullPage` unset or `true` | clamped to `fullPage: false`, height 900px; result includes a note |
+| `fullPage: false` and safe `height` | passes through unchanged |
+| `fullPage` unset or `true` | clamped to viewport capture and annotated in the tool result |
+| `height` above the safe threshold | clamped to `900px` |
+| image payload above inline limit | file is saved to disk and a text result is returned instead of inline image data |
 
-> **Note:** The extension cannot probe actual page height before capture (Playwright is not exposed to the extension API). It conservatively clamps all full-page requests. To capture a tall page in sections, call `screenshot` with `fullPage: false` and explicit `height`, or use URL `#anchor` navigation.
+The extension uses a conservative `7500px` image-height threshold to stay under common model limits with headroom.
 
 ---
 
@@ -210,7 +243,9 @@ The extension leans into terminal-safe rendering choices:
 ```text
 pi-extensions-oss/
 ├── extensions/
-│   ├── safe-screenshot.ts
+│   ├── aside/
+│   ├── browser-screenshot.ts
+│   ├── screenshots-picker/
 │   ├── session-notes.ts
 │   ├── status.ts
 │   └── todo.ts

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0
+
+- add `browser-screenshot`, a self-contained Playwright-backed `screenshot` tool for webpage capture and visual QA
+- fold the old `safe-screenshot` behavior into the new screenshot extension so installs are safe by default
+- add `playwright` and `@mariozechner/pi-agent-core` to the package dependencies needed for the new tool
+- remove the standalone `safe-screenshot` extension in favor of the integrated browser screenshot surface
+
+## 0.1.28
+
+- add `screenshots-picker`, a port of `Graffioh/pi-screenshots-picker`, for browsing, staging, and auto-attaching screenshots from inside Pi
+- add package-level and extension-level attribution back to the original project and author
+- add `glob` dependency for multi-source screenshot pattern matching
+
 ## 0.1.27
 
 - new `aside` extension: token-efficient side-question overlay for Pi
