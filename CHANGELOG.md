@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.16
+
+- add `agents-prompts-discover`, a lightweight extension that contributes project and global `.agents/prompts` directories through Pi `resources_discover`
+- verify the extension works as an additive prompt bridge so repos can discover installed library prompts without adding new per-repo prompt-path settings by default
+- keep the bridge read-only and discovery-only with no repo file mutation
+
 ## 0.2.10
 
 - restore the best-known normal-terminal `screenshots-picker` behavior after the unsuccessful Zellij safe-mode experiments
