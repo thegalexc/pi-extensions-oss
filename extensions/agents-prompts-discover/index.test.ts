@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 async function loadModule() {
-	return import(new URL("./agents-prompts-discover.ts", import.meta.url).href);
+	return import(new URL("./index.ts", import.meta.url).href);
 }
 
 test("discoverAgentsPromptPaths returns project and global .agents prompt paths when present", async () => {

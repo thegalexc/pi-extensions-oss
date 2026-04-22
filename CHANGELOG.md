@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.17
+
+- fix `agents-prompts-discover` packaging so Pi loads only the extension entrypoint and not the helper test file during package startup
+- move the extension to `extensions/agents-prompts-discover/index.ts`, matching Pi's smart extension discovery rules
+
 ## 0.2.16
 
 - add `agents-prompts-discover`, a lightweight extension that contributes project and global `.agents/prompts` directories through Pi `resources_discover`
