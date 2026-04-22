@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.7
+
+- restore the v0.2.2 `screenshots-picker` implementation after the temporary diagnostic rollback showed Zellij was also broken on the pre-v0.2.2 code path
+- keep the current best-known state for plain terminal use while we investigate Zellij behavior separately
+- the temporary rollback remains recoverable via local branch `backup/pre-zellij-upstream-revert-af01a65`
+
 ## 0.2.6
 
 - temporary diagnostic rollback: restore `screenshots-picker` code and related docs to the pre-v0.2.2 state so Zellij behavior can be compared against the last known upstream implementation before the iTerm2 preview work
