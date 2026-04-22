@@ -44,4 +44,5 @@ If no config is present, the extension auto-detects common screenshot locations 
 - thumbnail previews work best in Kitty, Ghostty, WezTerm, and iTerm2
 - inside Zellij, `/ss` automatically falls back to a text-only safe mode for paging, staging, opening, and deleting screenshots
 - Zellij detection also checks the parent process tree, so the fallback still activates when Zellij does not export its usual environment variables
+- if your environment hides both Zellij env vars and process ancestry, force text mode with `"pi-screenshots": { "forceTextMode": true }` in `~/.pi/agent/settings.json` or by launching Pi with `PI_SCREENSHOTS_FORCE_TEXT_MODE=1`
 - the picker can also open or delete screenshots from disk

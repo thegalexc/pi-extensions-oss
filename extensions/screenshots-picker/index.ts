@@ -54,6 +54,7 @@ interface SourceTab {
 
 interface Config {
 	sources?: string[];
+	forceTextMode?: boolean;
 }
 
 const SCREENSHOT_PATTERNS = [
@@ -99,6 +100,10 @@ function isGlobPattern(pattern: string): boolean {
 }
 
 let cachedZellijDetection: boolean | null = null;
+
+function shouldForceTextMode(config: Config): boolean {
+	return config.forceTextMode === true || process.env.PI_SCREENSHOTS_FORCE_TEXT_MODE === "1";
+}
 
 function detectZellijFromParentProcess(): boolean {
 	if (process.env.ZELLIJ || process.env.ZELLIJ_SESSION_NAME) {
@@ -441,7 +446,7 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 
 		tabs = nonEmptyTabs;
 
-		if (detectZellijFromParentProcess()) {
+		if (shouldForceTextMode(config) || detectZellijFromParentProcess()) {
 			let activeTab = 0;
 			let page = 0;
 			const PAGE_SIZE = 10;
@@ -500,8 +505,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 				const visible = screenshots.slice(start, start + PAGE_SIZE);
 				const tab = tabs[activeTab];
 				const pageCount = Math.max(1, Math.ceil(screenshots.length / PAGE_SIZE));
+				const forceTextMode = shouldForceTextMode(config);
 				const lines = [
-					"Zellij safe mode - text-only screenshot picker",
+					forceTextMode ? "Forced text-only screenshot picker" : "Zellij safe mode - text-only screenshot picker",
 					`Source ${activeTab + 1}/${tabs.length}: ${expandPath(tab.pattern).slice(-60)}`,
 					`Page ${page + 1}/${pageCount} - ${screenshots.length} screenshot${screenshots.length === 1 ? "" : "s"} - ${stagedPaths.size} staged`,
 					"",
