@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+- screenshots-picker: restore fixed 9x18 preview sizing for Kitty-family terminals (Kitty, Ghostty, WezTerm) while keeping measured cell sizing only for the new iTerm2 preview path
+- screenshots-picker: fix Ghostty regression introduced by the v0.2.2 shared sizing refactor
+
 ## 0.2.2
 
 - screenshots-picker: add a protocol-aware iTerm2 preview path instead of relying on Kitty image deletion semantics
