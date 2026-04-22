@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.10
+
+- restore the best-known normal-terminal `screenshots-picker` behavior after the unsuccessful Zellij safe-mode experiments
+- add `extensions/screenshots-picker/ZELLIJ-NOTES.md` with a detailed investigation summary, attempted fixes, observed behavior, and recommended next steps for future debugging
+
 ## 0.2.9
 
 - screenshots-picker: replace the Zellij path with a non-custom safe mode that avoids Pi TUI live overlay rendering entirely while preserving stage, open, delete, clear, and attach workflows for the most recent screenshots
