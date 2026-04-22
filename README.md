@@ -139,6 +139,8 @@ It is a port of [Graffioh/pi-screenshots-picker](https://github.com/Graffioh/pi-
 
 See [`extensions/screenshots-picker/README.md`](extensions/screenshots-picker/README.md) for configuration, keys, and attribution details. Screenshot sources are configured in `~/.pi/agent/settings.json` under `pi-screenshots.sources`, for example `~/Desktop` when your screenshots use standard macOS or CleanShot naming.
 
+For Zellij debugging, use `/ss-zellij-lab` and `/ss-zellij-report`. The diagnostic workflow is documented in [`extensions/screenshots-picker/ZELLIJ-LAB.md`](extensions/screenshots-picker/ZELLIJ-LAB.md).
+
 ---
 
 ## browser-screenshot

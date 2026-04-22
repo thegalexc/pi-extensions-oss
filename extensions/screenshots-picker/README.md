@@ -43,3 +43,5 @@ If no config is present, the extension auto-detects common screenshot locations 
 - glob patterns can match arbitrary image files, but `~/Desktop` is usually the cleaner default once CleanShot naming is recognized
 - thumbnail previews work best in Kitty, Ghostty, WezTerm, and iTerm2
 - the picker can also open or delete screenshots from disk
+- `/ss-zellij-lab` provides a focused diagnostic harness for Zellij rendering issues
+- `/ss-zellij-report` inserts a capability report into the editor for comparison notes
