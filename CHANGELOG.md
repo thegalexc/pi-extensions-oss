@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.9
+
+- screenshots-picker: replace the Zellij path with a non-custom safe mode that avoids Pi TUI live overlay rendering entirely while preserving stage, open, delete, clear, and attach workflows for the most recent screenshots
+
 ## 0.2.8
 
 - screenshots-picker: disable inline thumbnail and zoom preview rendering under Zellij so `/ss` keeps list, stage, open, delete, and attach behavior without triggering Pi TUI layout corruption from diff-rendered image blocks inside the multiplexer
