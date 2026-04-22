@@ -522,9 +522,10 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			const ZOOM_PAN_STEP_RATIO = 0.12;
 			const KITTY_IMAGE_ID = 9000;
 			const terminalCapabilities = getCapabilities();
-			const supportsKittyInspector = terminalCapabilities.images === "kitty";
-			const supportsITermPreview = terminalCapabilities.images === "iterm2";
-			const supportsKittyDelete = terminalCapabilities.images === "kitty";
+			const disableInlinePreview = !!process.env.ZELLIJ;
+			const supportsKittyInspector = terminalCapabilities.images === "kitty" && !disableInlinePreview;
+			const supportsITermPreview = terminalCapabilities.images === "iterm2" && !disableInlinePreview;
+			const supportsKittyDelete = terminalCapabilities.images === "kitty" && !disableInlinePreview;
 
 			let previewZoom = false;
 			let zoomLevel = 1;
@@ -1080,9 +1081,14 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 						lines.push(" " + theme.fg("dim", sourcePath));
 
 						const currentScreenshot = screenshots[cursor];
-						const zoomRender = currentScreenshot
+						const zoomRender = currentScreenshot && !disableInlinePreview
 							? renderZoomInspectorThumbnail(currentScreenshot, maxPreviewWidthCells, previewLines)
-							: { lines: Array(previewLines).fill(""), geometry: null as ZoomViewportGeometry | null };
+							: {
+								lines: disableInlinePreview
+									? [theme.fg("dim", "Inline preview disabled under Zellij"), ...Array(Math.max(0, previewLines - 1)).fill("")]
+									: Array(previewLines).fill(""),
+								geometry: null as ZoomViewportGeometry | null,
+							};
 
 						if (currentScreenshot) {
 							const relTime = formatRelativeTime(currentScreenshot.mtime);
@@ -1127,7 +1133,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 						// Render thumbnail for current selection
 						const currentScreenshot = screenshots[cursor];
 						const imageLines = currentScreenshot
-							? renderThumbnail(currentScreenshot, maxPreviewWidthCells, previewLines)
+							? disableInlinePreview
+								? [theme.fg("dim", "Inline preview disabled under Zellij"), ...Array(Math.max(0, previewLines - 1)).fill("")]
+								: renderThumbnail(currentScreenshot, maxPreviewWidthCells, previewLines)
 							: Array(previewLines).fill("");
 
 						// Content area: list keeps a compact height while preview gets extra rows
@@ -1179,6 +1187,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 						lines.push(" " + theme.fg("dim", "Any other key to cancel"));
 					} else if (stagedCount === 0) {
 						lines.push(" " + theme.fg("warning", "\u26A0 Press s/space to stage screenshots before closing"));
+						if (disableInlinePreview) {
+							lines.push(" " + theme.fg("dim", "Zellij detected - inline preview disabled for layout safety"));
+						}
 						if (zoomSelectionLocked) {
 							lines.push(" " + theme.fg("warning", "Zoom lock: press 0 to reset before using \u2191\u2193 to select other screenshots"));
 						}
@@ -1190,11 +1201,16 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 										? supportsKittyInspector
 											? "\u2191\u2193\u2190\u2192 pan \u2022 +/- zoom \u2022 [ ] nav \u2022 0 reset \u2022 z split \u2022 s/space toggle \u2022 enter done"
 											: "\u2191\u2193 nav \u2022 +/- zoom \u2022 z split \u2022 s/space toggle \u2022 enter done"
-										: "\u2191\u2193 nav \u2022 z zoom \u2022 s/space toggle \u2022 o open \u2022 d delete \u2022 nn nuke \u2022 enter done"
+										: disableInlinePreview
+											? "\u2191\u2193 nav \u2022 s/space toggle \u2022 o open \u2022 d delete \u2022 nn nuke \u2022 enter done"
+											: "\u2191\u2193 nav \u2022 z zoom \u2022 s/space toggle \u2022 o open \u2022 d delete \u2022 nn nuke \u2022 enter done"
 								)
 						);
 					} else {
 						lines.push(" " + theme.fg("success", `\u2713 ${stagedCount} staged`));
+						if (disableInlinePreview) {
+							lines.push(" " + theme.fg("dim", "Zellij detected - inline preview disabled for layout safety"));
+						}
 						if (zoomSelectionLocked) {
 							lines.push(" " + theme.fg("warning", "Zoom lock: press 0 to reset before using \u2191\u2193 to select other screenshots"));
 						}
@@ -1206,7 +1222,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 										? supportsKittyInspector
 											? "\u2191\u2193\u2190\u2192 pan \u2022 +/- zoom \u2022 [ ] nav \u2022 0 reset \u2022 z split \u2022 x clear all \u2022 enter done"
 											: "\u2191\u2193 nav \u2022 +/- zoom \u2022 z split \u2022 x clear all \u2022 enter done"
-										: "z zoom \u2022 s/space toggle \u2022 x clear all \u2022 d delete \u2022 nn nuke \u2022 enter done"
+										: disableInlinePreview
+											? "s/space toggle \u2022 x clear all \u2022 d delete \u2022 nn nuke \u2022 enter done"
+											: "z zoom \u2022 s/space toggle \u2022 x clear all \u2022 d delete \u2022 nn nuke \u2022 enter done"
 								)
 						);
 					}
@@ -1296,6 +1314,10 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 					}
 
 					if (data === "z" || data === "Z") {
+						if (disableInlinePreview) {
+							ctx.ui.notify("Inline preview is disabled under Zellij for layout safety", "info");
+							return;
+						}
 						cleanupImage();
 						previewZoom = !previewZoom;
 						resetZoomViewport();

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.8
+
+- screenshots-picker: disable inline thumbnail and zoom preview rendering under Zellij so `/ss` keeps list, stage, open, delete, and attach behavior without triggering Pi TUI layout corruption from diff-rendered image blocks inside the multiplexer
+
 ## 0.2.7
 
 - restore the v0.2.2 `screenshots-picker` implementation after the temporary diagnostic rollback showed Zellij was also broken on the pre-v0.2.2 code path
