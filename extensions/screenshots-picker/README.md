@@ -43,4 +43,5 @@ If no config is present, the extension auto-detects common screenshot locations 
 - glob patterns can match arbitrary image files, but `~/Desktop` is usually the cleaner default once CleanShot naming is recognized
 - thumbnail previews work best in Kitty, Ghostty, WezTerm, and iTerm2
 - inside Zellij, `/ss` automatically falls back to a text-only safe mode for paging, staging, opening, and deleting screenshots
+- Zellij detection also checks the parent process tree, so the fallback still activates when Zellij does not export its usual environment variables
 - the picker can also open or delete screenshots from disk

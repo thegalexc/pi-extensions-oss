@@ -98,6 +98,42 @@ function isGlobPattern(pattern: string): boolean {
 	return /[*?[\]{}!]/.test(pattern);
 }
 
+let cachedZellijDetection: boolean | null = null;
+
+function detectZellijFromParentProcess(): boolean {
+	if (process.env.ZELLIJ || process.env.ZELLIJ_SESSION_NAME) {
+		return true;
+	}
+	if (cachedZellijDetection != null) {
+		return cachedZellijDetection;
+	}
+
+	try {
+		let pid = process.ppid;
+		for (let depth = 0; depth < 8 && pid > 1; depth++) {
+			const output = execSync(`ps -o comm= -o ppid= -p ${pid}`, { encoding: "utf-8" }).trim();
+			if (!output) break;
+			const match = output.match(/^(.+?)\s+(\d+)$/);
+			if (!match) break;
+			const command = basename(match[1].trim()).toLowerCase();
+			const parentPid = Number(match[2]);
+			if (command === "zellij") {
+				cachedZellijDetection = true;
+				return true;
+			}
+			if (!Number.isFinite(parentPid) || parentPid <= 1 || parentPid === pid) {
+				break;
+			}
+			pid = parentPid;
+		}
+	} catch {
+		// Ignore detection failures and fall back to non-Zellij behavior.
+	}
+
+	cachedZellijDetection = false;
+	return false;
+}
+
 /**
  * Get the default screenshot directory based on platform.
  */
@@ -405,7 +441,7 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 
 		tabs = nonEmptyTabs;
 
-		if (process.env.ZELLIJ) {
+		if (detectZellijFromParentProcess()) {
 			let activeTab = 0;
 			let page = 0;
 			const PAGE_SIZE = 10;
