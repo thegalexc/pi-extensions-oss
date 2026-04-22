@@ -187,4 +187,6 @@ If this investigation is resumed later, start here:
 
 ## Practical workaround for now
 
-Use `/ss` outside Zellij.
+Use the text-only `/ss` safe mode inside Zellij. If detection misses your environment, force it with `"pi-screenshots": { "forceTextMode": true }` in `~/.pi/agent/settings.json`.
+
+For the upstream watch list and criteria for removing the forced fallback later, see [`ZELLIJ-UPSTREAM-WATCH.md`](./ZELLIJ-UPSTREAM-WATCH.md).
