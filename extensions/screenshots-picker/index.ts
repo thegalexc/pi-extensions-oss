@@ -522,10 +522,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			const ZOOM_PAN_STEP_RATIO = 0.12;
 			const KITTY_IMAGE_ID = 9000;
 			const terminalCapabilities = getCapabilities();
-			const isGhostty = process.env.TERM_PROGRAM?.toLowerCase() === "ghostty";
 			const supportsKittyInspector = terminalCapabilities.images === "kitty";
 			const supportsITermPreview = terminalCapabilities.images === "iterm2";
-			const supportsKittyDelete = terminalCapabilities.images === "kitty" && !isGhostty;
+			const supportsKittyDelete = terminalCapabilities.images === "kitty";
 
 			let previewZoom = false;
 			let zoomLevel = 1;
@@ -633,15 +632,6 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			}
 
 			function getTerminalCellDimensions(): { widthPx: number; heightPx: number } {
-				// v0.2.2 switched all preview math to measured cell dimensions.
-				// That stabilized iTerm2, but Ghostty/Kitty-family terminals were
-				// already working with the old fixed assumptions and can report
-				// values that make the picker geometry drift. Keep the measured path
-				// only for iTerm2 and preserve the known-good fixed sizing for the
-				// Kitty path (Kitty, Ghostty, WezTerm).
-				if (!supportsITermPreview) {
-					return { widthPx: 9, heightPx: 18 };
-				}
 				const dims = getCellDimensions();
 				return {
 					widthPx: Math.max(1, dims.widthPx || 9),

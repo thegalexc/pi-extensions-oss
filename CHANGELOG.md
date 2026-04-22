@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.5
+
+- screenshots-picker: revert the Ghostty-specific follow-up experiments from v0.2.3 and v0.2.4 after testing showed the main remaining issue was stretched thumbnails, not broken delete handling
+- screenshots-picker: restore measured cell sizing and standard Kitty delete behavior while we investigate small-pane Ghostty behavior separately
+
 ## 0.2.4
 
 - screenshots-picker: stop sending Kitty image deletion escape sequences in Ghostty, which reports Kitty image support but can break the `/ss` UI when delete commands are emitted between preview frames
