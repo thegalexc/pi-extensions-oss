@@ -137,7 +137,7 @@ It is a port of [Graffioh/pi-screenshots-picker](https://github.com/Graffioh/pi-
 - multiple source directories or glob patterns supported
 - thumbnail previews in image-capable terminals
 
-See [`extensions/screenshots-picker/README.md`](extensions/screenshots-picker/README.md) for configuration, keys, and attribution details. Screenshot sources are configured in `~/.pi/agent/settings.json` under `pi-screenshots.sources`, for example `~/Desktop` when your screenshots use standard macOS or CleanShot naming.
+See [`extensions/screenshots-picker/README.md`](extensions/screenshots-picker/README.md) for configuration, keys, and attribution details. Screenshot sources are configured in `~/.pi/agent/settings.json` under `pi-screenshots.sources`, for example `~/Desktop` when your screenshots use standard macOS or CleanShot naming. Inside Zellij, `/ss` falls back to a text-only safe mode so you can still page through screenshots and stage multiple items without inline thumbnails.
 
 ---
 

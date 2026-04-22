@@ -42,4 +42,5 @@ If no config is present, the extension auto-detects common screenshot locations 
 - plain directories are filtered to likely screenshot filenames such as macOS `Screenshot ...`, CleanShot `CleanShot 2026-04-17 at 14.27.29`, GNOME timestamped files, and common Linux screenshot tool prefixes
 - glob patterns can match arbitrary image files, but `~/Desktop` is usually the cleaner default once CleanShot naming is recognized
 - thumbnail previews work best in Kitty, Ghostty, WezTerm, and iTerm2
+- inside Zellij, `/ss` automatically falls back to a text-only safe mode for paging, staging, opening, and deleting screenshots
 - the picker can also open or delete screenshots from disk

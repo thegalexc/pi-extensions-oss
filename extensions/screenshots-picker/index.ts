@@ -405,6 +405,184 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 
 		tabs = nonEmptyTabs;
 
+		if (process.env.ZELLIJ) {
+			let activeTab = 0;
+			let page = 0;
+			const PAGE_SIZE = 10;
+
+			function getActiveScreenshots(): ScreenshotInfo[] {
+				return tabs[activeTab]?.screenshots || [];
+			}
+
+			function clampPage(): void {
+				const screenshots = getActiveScreenshots();
+				const maxPage = Math.max(0, Math.ceil(screenshots.length / PAGE_SIZE) - 1);
+				page = Math.max(0, Math.min(page, maxPage));
+			}
+
+			function clearAllStaged(): void {
+				stagedImages = [];
+				stagedPaths.clear();
+			}
+
+			function unstageScreenshotPath(path: string): void {
+				stagedImages = stagedImages.filter((image) => image.sourcePath !== path);
+				stagedPaths.delete(path);
+			}
+
+			function toggleStageScreenshot(screenshot: ScreenshotInfo): void {
+				if (stagedPaths.has(screenshot.path)) {
+					unstageScreenshotPath(screenshot.path);
+					return;
+				}
+
+				const img = loadImageBase64(screenshot.path);
+				stagedImages.push({
+					sourcePath: screenshot.path,
+					type: "image",
+					mimeType: img.mimeType,
+					data: img.data,
+				});
+				stagedPaths.add(screenshot.path);
+			}
+
+			while (true) {
+				const screenshots = getActiveScreenshots();
+				if (screenshots.length === 0) {
+					const nextTab = tabs.findIndex((tab) => tab.screenshots.length > 0);
+					if (nextTab === -1) {
+						ctx.ui.notify("No screenshots left to browse", "warning");
+						return;
+					}
+					activeTab = nextTab;
+					page = 0;
+					continue;
+				}
+
+				clampPage();
+				const start = page * PAGE_SIZE;
+				const visible = screenshots.slice(start, start + PAGE_SIZE);
+				const tab = tabs[activeTab];
+				const pageCount = Math.max(1, Math.ceil(screenshots.length / PAGE_SIZE));
+				const lines = [
+					"Zellij safe mode - text-only screenshot picker",
+					`Source ${activeTab + 1}/${tabs.length}: ${expandPath(tab.pattern).slice(-60)}`,
+					`Page ${page + 1}/${pageCount} - ${screenshots.length} screenshot${screenshots.length === 1 ? "" : "s"} - ${stagedPaths.size} staged`,
+					"",
+					...visible.map((s, i) => {
+						const relTime = formatRelativeTime(s.mtime);
+						const size = formatSize(s.size);
+						const staged = stagedPaths.has(s.path) ? " [staged]" : "";
+						return `${i + 1}. ${s.name} - ${relTime} - ${size}${staged}`;
+					}),
+					"",
+					"Commands:",
+					"  1 or 1,3,5   toggle stage on current page",
+					"  n / p        next or previous page",
+					"  t / T        next or previous source",
+					"  oN           open item on current page",
+					"  dN           delete item on current page",
+					"  x            clear staged",
+					"  enter blank  done",
+					"  esc          cancel",
+				];
+
+				const response = await ctx.ui.input(lines.join("\n"));
+				if (response == null) {
+					return;
+				}
+
+				const value = response.trim();
+				if (!value) {
+					return;
+				}
+
+				if (/^[nN]$/.test(value)) {
+					page += 1;
+					clampPage();
+					continue;
+				}
+				if (/^[pP]$/.test(value)) {
+					page -= 1;
+					clampPage();
+					continue;
+				}
+				if (value === "t") {
+					activeTab = (activeTab + 1) % tabs.length;
+					page = 0;
+					continue;
+				}
+				if (value === "T") {
+					activeTab = (activeTab - 1 + tabs.length) % tabs.length;
+					page = 0;
+					continue;
+				}
+				if (/^[xX]$/.test(value)) {
+					const count = stagedImages.length;
+					clearAllStaged();
+					updateStagedWidget(ctx);
+					ctx.ui.notify(count > 0 ? `Cleared ${count} staged screenshot${count === 1 ? "" : "s"}` : "No staged screenshots to clear", "info");
+					continue;
+				}
+
+				const openMatch = value.match(/^[oO](\d+)$/);
+				if (openMatch) {
+					const index = Number(openMatch[1]) - 1;
+					const screenshot = visible[index];
+					if (!screenshot) {
+						ctx.ui.notify("No screenshot with that number on this page", "warning");
+						continue;
+					}
+					openFile(screenshot.path);
+					continue;
+				}
+
+				const deleteMatch = value.match(/^[dD](\d+)$/);
+				if (deleteMatch) {
+					const index = Number(deleteMatch[1]) - 1;
+					const screenshot = visible[index];
+					if (!screenshot) {
+						ctx.ui.notify("No screenshot with that number on this page", "warning");
+						continue;
+					}
+					try {
+						unlinkSync(screenshot.path);
+						unstageScreenshotPath(screenshot.path);
+						const tabScreenshots = tabs[activeTab].screenshots;
+						const tabIndex = tabScreenshots.findIndex((s) => s.path === screenshot.path);
+						if (tabIndex !== -1) {
+							tabScreenshots.splice(tabIndex, 1);
+						}
+						updateStagedWidget(ctx);
+						ctx.ui.notify(`Deleted screenshot: ${screenshot.name}`, "info");
+					} catch {
+						ctx.ui.notify(`Failed to delete screenshot: ${screenshot.name}`, "error");
+					}
+					continue;
+				}
+
+				const indexes = value
+					.split(",")
+					.map((part) => Number(part.trim()) - 1)
+					.filter((index) => Number.isInteger(index) && index >= 0 && index < visible.length);
+				if (indexes.length === 0) {
+					ctx.ui.notify("No valid screenshot numbers selected", "warning");
+					continue;
+				}
+
+				for (const index of indexes) {
+					const screenshot = visible[index];
+					if (!screenshot) continue;
+					try {
+						toggleStageScreenshot(screenshot);
+					} catch {
+						ctx.ui.notify(`Failed to stage screenshot: ${screenshot.name}`, "error");
+					}
+				}
+				updateStagedWidget(ctx);
+			}
+		}
+
 		// Detect SSH session - inline images don't work over SSH
 		const isSSH = !!(process.env.SSH_CONNECTION || process.env.SSH_CLIENT);
 
