@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6
+
+- temporary diagnostic rollback: restore `screenshots-picker` code and related docs to the pre-v0.2.2 state so Zellij behavior can be compared against the last known upstream implementation before the iTerm2 preview work
+- reversible backup branch created locally as `backup/pre-zellij-upstream-revert-af01a65`
+
 ## 0.2.5
 
 - screenshots-picker: revert the Ghostty-specific follow-up experiments from v0.2.3 and v0.2.4 after testing showed the main remaining issue was stretched thumbnails, not broken delete handling

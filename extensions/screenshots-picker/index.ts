@@ -23,9 +23,7 @@ import {
 	Image,
 	Key,
 	deleteKittyImage,
-	encodeITerm2,
 	getCapabilities,
-	getCellDimensions,
 	getImageDimensions as getTerminalImageDimensions,
 	matchesKey,
 	visibleWidth,
@@ -523,8 +521,6 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			const KITTY_IMAGE_ID = 9000;
 			const terminalCapabilities = getCapabilities();
 			const supportsKittyInspector = terminalCapabilities.images === "kitty";
-			const supportsITermPreview = terminalCapabilities.images === "iterm2";
-			const supportsKittyDelete = terminalCapabilities.images === "kitty";
 
 			let previewZoom = false;
 			let zoomLevel = 1;
@@ -631,13 +627,9 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 				stagedPaths.clear();
 			}
 
-			function getTerminalCellDimensions(): { widthPx: number; heightPx: number } {
-				const dims = getCellDimensions();
-				return {
-					widthPx: Math.max(1, dims.widthPx || 9),
-					heightPx: Math.max(1, dims.heightPx || 18),
-				};
-			}
+			// Typical terminal cell dimensions (pixels)
+			const CELL_WIDTH_PX = 9;
+			const CELL_HEIGHT_PX = 18;
 
 			// Calculate max width cells so that image height fits in maxRows
 			function calculateConstrainedWidth(
@@ -645,21 +637,20 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 				maxRows: number,
 				maxWidthCells: number
 			): number {
-				const cellDims = getTerminalCellDimensions();
 				const safeMaxWidthCells = Math.max(1, maxWidthCells);
-				const scaledWidthPx = safeMaxWidthCells * cellDims.widthPx;
+				const scaledWidthPx = safeMaxWidthCells * CELL_WIDTH_PX;
 				const scale = scaledWidthPx / dims.width;
 				const scaledHeightPx = dims.height * scale;
-				const rows = Math.ceil(scaledHeightPx / cellDims.heightPx);
+				const rows = Math.ceil(scaledHeightPx / CELL_HEIGHT_PX);
 
 				if (rows <= maxRows) {
 					return safeMaxWidthCells;
 				}
 
-				const targetHeightPx = maxRows * cellDims.heightPx;
+				const targetHeightPx = maxRows * CELL_HEIGHT_PX;
 				const targetScale = targetHeightPx / dims.height;
 				const targetWidthPx = dims.width * targetScale;
-				return Math.max(1, Math.min(safeMaxWidthCells, Math.floor(targetWidthPx / cellDims.widthPx)));
+				return Math.max(1, Math.min(safeMaxWidthCells, Math.floor(targetWidthPx / CELL_WIDTH_PX)));
 			}
 
 			function getZoomPreviewLines(): number {
@@ -754,9 +745,8 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 					return null;
 				}
 
-				const cellDims = getTerminalCellDimensions();
-				const viewportWidthPx = Math.max(1, maxPreviewWidthCells * cellDims.widthPx);
-				const viewportHeightPx = Math.max(1, previewLines * cellDims.heightPx);
+				const viewportWidthPx = Math.max(1, maxPreviewWidthCells * CELL_WIDTH_PX);
+				const viewportHeightPx = Math.max(1, previewLines * CELL_HEIGHT_PX);
 				const fitScale = Math.min(viewportWidthPx / dims.width, viewportHeightPx / dims.height);
 				const safeFitScale = fitScale > 0 && Number.isFinite(fitScale) ? fitScale : 1;
 				const scale = safeFitScale * zoomLevel;
@@ -771,8 +761,8 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 
 				const renderWidthPx = cropWidth * scale;
 				const renderHeightPx = cropHeight * scale;
-				const renderWidthCells = Math.max(1, Math.min(maxPreviewWidthCells, Math.floor(renderWidthPx / cellDims.widthPx)));
-				const renderRows = Math.max(1, Math.min(previewLines, Math.ceil(renderHeightPx / cellDims.heightPx)));
+				const renderWidthCells = Math.max(1, Math.min(maxPreviewWidthCells, Math.floor(renderWidthPx / CELL_WIDTH_PX)));
+				const renderRows = Math.max(1, Math.min(previewLines, Math.ceil(renderHeightPx / CELL_HEIGHT_PX)));
 
 				return {
 					cropX: Math.round(panX),
@@ -847,43 +837,6 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			let lastRenderedPath = "";
 			let lastRenderedFrameKey = "";
 
-			function renderITermThumbnail(
-				thumb: { data: string; mimeType: string },
-				dims: { width: number; height: number } | null,
-				maxPreviewWidthCells: number,
-				previewLines: number
-			): string[] {
-				const safeMaxWidthCells = Math.max(1, maxPreviewWidthCells);
-				const widthCells = dims ? calculateConstrainedWidth(dims, previewLines, safeMaxWidthCells) : safeMaxWidthCells;
-				const rows = Math.max(1, Math.min(previewLines, dims ? calculateImageRowsForCells(dims, widthCells) : previewLines));
-				const sequence = encodeITerm2(thumb.data, {
-					width: widthCells,
-					height: rows,
-					preserveAspectRatio: true,
-				});
-				const moveUp = rows > 1 ? `\x1b[${rows - 1}A` : "";
-				const lines: string[] = [];
-				for (let i = 0; i < rows - 1; i++) {
-					lines.push("");
-				}
-				lines.push(moveUp + sequence);
-				for (let i = rows; i < previewLines; i++) {
-					lines.push("");
-				}
-				return lines;
-			}
-
-			function calculateImageRowsForCells(
-				dims: { width: number; height: number },
-				targetWidthCells: number
-			): number {
-				const cellDims = getTerminalCellDimensions();
-				const targetWidthPx = Math.max(1, targetWidthCells) * cellDims.widthPx;
-				const scale = targetWidthPx / dims.width;
-				const scaledHeightPx = dims.height * scale;
-				return Math.max(1, Math.ceil(scaledHeightPx / cellDims.heightPx));
-			}
-
 			function renderThumbnail(
 				screenshot: ScreenshotInfo,
 				maxPreviewWidthCells: number,
@@ -896,7 +849,7 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 				// Delete previous image when switching to a different screenshot.
 				// Inspector mode has its own renderer that deletes every frame.
 				let deleteCmd = "";
-				if (supportsKittyDelete && lastRenderedFrameKey && lastRenderedFrameKey !== frameKey) {
+				if (lastRenderedFrameKey && lastRenderedFrameKey !== frameKey) {
 					deleteCmd = deleteKittyImage(KITTY_IMAGE_ID);
 				}
 				lastRenderedPath = screenshot.path;
@@ -916,10 +869,6 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 					const maxWidth = dims
 						? calculateConstrainedWidth(dims, previewLines, maxPreviewWidthCells)
 						: Math.max(1, maxPreviewWidthCells);
-
-					if (supportsITermPreview) {
-						return renderITermThumbnail(thumb, dims, maxWidth, previewLines);
-					}
 
 					const img = new Image(thumb.data, thumb.mimeType, imageTheme, {
 						maxWidthCells: maxWidth,
@@ -980,7 +929,7 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 				let deleteCmd = "";
 				// In inspector mode, delete the previous Kitty image on every render.
 				// Otherwise zoom/pan updates of the same screenshot can stack images.
-				if (supportsKittyDelete && lastRenderedPath) {
+				if (lastRenderedPath) {
 					deleteCmd = deleteKittyImage(KITTY_IMAGE_ID);
 				}
 				lastRenderedPath = screenshot.path;
@@ -1223,9 +1172,7 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 					// Helper to clean up displayed image before exiting
 					function cleanupImage() {
 						if (lastRenderedPath) {
-							if (supportsKittyDelete) {
-								process.stdout.write(deleteKittyImage(KITTY_IMAGE_ID));
-							}
+							process.stdout.write(deleteKittyImage(KITTY_IMAGE_ID));
 							lastRenderedPath = "";
 							lastRenderedFrameKey = "";
 						}
