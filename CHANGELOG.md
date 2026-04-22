@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- screenshots-picker: stop sending Kitty image deletion escape sequences in Ghostty, which reports Kitty image support but can break the `/ss` UI when delete commands are emitted between preview frames
+
 ## 0.2.3
 
 - screenshots-picker: restore fixed 9x18 preview sizing for Kitty-family terminals (Kitty, Ghostty, WezTerm) while keeping measured cell sizing only for the new iTerm2 preview path

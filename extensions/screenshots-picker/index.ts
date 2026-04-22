@@ -522,9 +522,10 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			const ZOOM_PAN_STEP_RATIO = 0.12;
 			const KITTY_IMAGE_ID = 9000;
 			const terminalCapabilities = getCapabilities();
+			const isGhostty = process.env.TERM_PROGRAM?.toLowerCase() === "ghostty";
 			const supportsKittyInspector = terminalCapabilities.images === "kitty";
 			const supportsITermPreview = terminalCapabilities.images === "iterm2";
-			const supportsKittyDelete = terminalCapabilities.images === "kitty";
+			const supportsKittyDelete = terminalCapabilities.images === "kitty" && !isGhostty;
 
 			let previewZoom = false;
 			let zoomLevel = 1;
