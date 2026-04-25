@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.21
+
+- declare the package as ESM with `"type": "module"` so Node test runs stop emitting `MODULE_TYPELESS_PACKAGE_JSON` warnings
+- keep extension code and test commands unchanged while making the package metadata match the repo's actual module style
+
 ## 0.2.20
 
 - make healthy `/library-check` output end with `Status: healthy` instead of always showing remediation steps
