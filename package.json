@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "description": "Productivity and resilience extensions for Pi: session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
@@ -39,7 +39,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/library-manifest/index.test.ts"
+    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts"
   },
   "overrides": {
     "basic-ftp": "5.3.0"
@@ -62,6 +62,7 @@
     "@mariozechner/pi-tui": "^0.70.0",
     "@sinclair/typebox": "^0.34.48",
     "@types/node": "^24.5.2",
+    "jiti": "^2.6.1",
     "typescript": "^5.9.3"
   },
   "pi": {

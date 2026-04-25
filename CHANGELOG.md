@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.22
+
+- add a jiti-backed `library-manifest` entrypoint smoke test so the package test suite covers the real extension entrypoint shape, not only helper modules
+- add `jiti` as a dev dependency for Pi-runtime-like extension loading in tests
+
 ## 0.2.21
 
 - declare the package as ESM with `"type": "module"` so Node test runs stop emitting `MODULE_TYPELESS_PACKAGE_JSON` warnings
