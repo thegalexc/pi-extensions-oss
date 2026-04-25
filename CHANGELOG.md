@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.18
+
+- bump Pi development dependency pins to `^0.70.0` and refresh the lockfile for the current Pi line
+- tighten `todo` extension typing so the package typechecks cleanly against the 0.70.x Pi line
+
 ## 0.2.17
 
 - fix `agents-prompts-discover` packaging so Pi loads only the extension entrypoint and not the helper test file during package startup

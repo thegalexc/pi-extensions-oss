@@ -13,7 +13,6 @@
  * resume, and tree navigation restore the correct todo state automatically.
  */
 
-import { StringEnum } from "@mariozechner/pi-ai";
 import type { ExtensionAPI, ExtensionContext, Theme } from "@mariozechner/pi-coding-agent";
 import { matchesKey, Text, truncateToWidth } from "@mariozechner/pi-tui";
 import { Type } from "@sinclair/typebox";
@@ -24,15 +23,28 @@ interface Todo {
 	done: boolean;
 }
 
+type TodoAction = "list" | "add" | "toggle" | "clear";
+
 interface TodoDetails {
-	action: "list" | "add" | "toggle" | "clear";
+	action: TodoAction;
 	todos: Todo[];
 	nextId: number;
 	error?: string;
 }
 
+interface TodoParamsType {
+	action: TodoAction;
+	text?: string;
+	id?: number;
+}
+
 const TodoParams = Type.Object({
-	action: StringEnum(["list", "add", "toggle", "clear"] as const),
+	action: Type.Union([
+		Type.Literal("list"),
+		Type.Literal("add"),
+		Type.Literal("toggle"),
+		Type.Literal("clear"),
+	]),
 	text: Type.Optional(Type.String({ description: "Todo text for add" })),
 	id: Type.Optional(Type.Number({ description: "Todo ID for toggle" })),
 });
@@ -131,7 +143,7 @@ export default function (pi: ExtensionAPI) {
 		],
 		parameters: TodoParams,
 
-		async execute(_toolCallId, params, _signal, _onUpdate, _ctx) {
+		async execute(_toolCallId, params: TodoParamsType, _signal, _onUpdate, _ctx) {
 			switch (params.action) {
 				case "list":
 					return {
@@ -210,7 +222,7 @@ export default function (pi: ExtensionAPI) {
 			}
 		},
 
-		renderCall(args, theme) {
+		renderCall(args: TodoParamsType, theme) {
 			let text = theme.fg("toolTitle", theme.bold("todo ")) + theme.fg("muted", args.action);
 			if (args.text) text += ` ${theme.fg("dim", `"${args.text}"`)}`;
 			if (args.id !== undefined) text += ` ${theme.fg("accent", `#${args.id}`)}`;
@@ -220,8 +232,8 @@ export default function (pi: ExtensionAPI) {
 		renderResult(result, { expanded }, theme) {
 			const details = result.details as TodoDetails | undefined;
 			if (!details) {
-				const text = result.content[0];
-				return new Text(text?.type === "text" ? text.text : "", 0, 0);
+				const text = result.content[0] as { type?: string; text?: string } | undefined;
+				return new Text(text?.type === "text" ? text.text ?? "" : "", 0, 0);
 			}
 
 			if (details.error) {
@@ -257,8 +269,8 @@ export default function (pi: ExtensionAPI) {
 					);
 				}
 				case "toggle": {
-					const text = result.content[0];
-					const msg = text?.type === "text" ? text.text : "";
+					const text = result.content[0] as { type?: string; text?: string } | undefined;
+					const msg = text?.type === "text" ? text.text ?? "" : "";
 					return new Text(theme.fg("success", "✓ ") + theme.fg("muted", msg), 0, 0);
 				}
 				case "clear":
