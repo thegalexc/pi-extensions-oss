@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.19
+
+- add `library-manifest`, a startup health-check extension for repos that declare `.pi/library-manifest.yaml`
+- warn non-blockingly when required library-managed prompts, skills, or agents are missing from `.agents/*` or `~/.agents/*`
+- add `/library-check` and `/library-hydrate` commands for explicit diagnostics and remediation from inside Pi
+- report same-name repo-authored `.pi/*` artifacts as collisions instead of silently treating them as healthy library installs
+
 ## 0.2.18
 
 - bump Pi development dependency pins to `^0.70.0` and refresh the lockfile for the current Pi line

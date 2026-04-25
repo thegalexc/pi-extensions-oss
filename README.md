@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -13,6 +13,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
 | [`screenshots-picker`](#screenshots-picker) | Browse, stage, and auto-attach recent screenshots from inside Pi |
 | [`agents-prompts-discover`](#agents-prompts-discover) | Additive prompt discovery bridge for project and global `.agents/prompts` |
+| [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | `status` | Package-level footer status chip showing the loaded OSS version |
 
@@ -171,6 +172,28 @@ This extension does not change prompt ownership rules. Repo-authored prompts in 
 
 ---
 
+## library-manifest
+
+`library-manifest` checks for `.pi/library-manifest.yaml` on `session_start` and warns when a repo expects library-managed prompts, skills, or reusable agents that are not currently installed.
+
+### Why it exists
+
+A repo can declare required shared artifacts for dispatch hydration or reproducible local worktrees, but an interactive Pi session can still start silently with those artifacts missing. This extension makes that gap visible without blocking the session.
+
+### Behavior
+
+- non-blocking startup warning only when issues are present
+- read-only startup check
+- `/library-check` for a grouped diagnostic report
+- `/library-hydrate` to run the Library hydrate flow and reload on success
+- reports repo-authored `.pi/*` same-name artifacts as collisions rather than silently treating them as healthy library installs
+
+### Important note
+
+The startup check is intentionally lightweight. It validates the direct `required:` refs in `.pi/library-manifest.yaml` against installed `.agents/*` and `~/.agents/*` surfaces. It does not expand transitive `requires:` entries from `library.yaml` at startup.
+
+---
+
 ## browser-screenshot
 
 `browser-screenshot` adds a Playwright-backed `screenshot` tool to Pi for webpage capture and visual QA.
@@ -263,6 +286,7 @@ If Pi still reports a `Tool "screenshot" conflicts with ...pi-extensions/...` er
 ```bash
 pnpm install
 pnpm run typecheck
+pnpm run test
 ```
 
 ## Compatibility notes
