@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.20
+
+- make healthy `/library-check` output end with `Status: healthy` instead of always showing remediation steps
+- keep the fix section only when the manifest check finds missing installs, collisions, legacy fallbacks, or manifest issues
+
 ## 0.2.19
 
 - add `library-manifest`, a startup health-check extension for repos that declare `.pi/library-manifest.yaml`

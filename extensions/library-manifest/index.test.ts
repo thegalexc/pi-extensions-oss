@@ -143,7 +143,7 @@ test("checkLibraryManifest classifies local, global, collision, legacy, and miss
 	assert.equal(statuses.get("skill:file-operations"), "missing");
 });
 
-test("format helpers produce compact startup warning and detailed report", async () => {
+test("format helpers produce compact startup warning and issue-oriented report", async () => {
 	const repo = makeRepo("repo-format");
 	writeManifest(repo, "required:\n  - skill:wrapup\n  - prompt:implement\n");
 	const { loadLibraryManifest } = await loadManifestModule();
@@ -156,6 +156,22 @@ test("format helpers produce compact startup warning and detailed report", async
 	assert.match(report, /Missing/);
 	assert.match(report, /\/library-hydrate/);
 	assert.match(report, /python3 .*library\.py hydrate/);
+	assert.doesNotMatch(report, /Status\n- healthy/);
+});
+
+test("formatCheckReport shows healthy status and omits fix section when there are no issues", async () => {
+	const repo = makeRepo("repo-format-healthy");
+	writeManifest(repo, "required:\n  - prompt:implement\n  - skill:wrapup\n");
+	writeFile(join(repo, ".agents", "prompts", "implement.md"));
+	writeFile(join(repo, ".agents", "skills", "wrapup", "SKILL.md"));
+	const { loadLibraryManifest } = await loadManifestModule();
+	const { checkLibraryManifest } = await loadCheckModule();
+	const { formatCheckReport } = await loadFormatModule();
+	const result = checkLibraryManifest(repo, loadLibraryManifest(repo)!);
+	const report = formatCheckReport(result, repo);
+
+	assert.match(report, /Status\n- healthy/);
+	assert.doesNotMatch(report, /\nFix\n/);
 });
 
 test("getIssueCount reflects missing refs, collisions, legacy installs, and manifest issues", async () => {

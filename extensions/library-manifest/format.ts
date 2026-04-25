@@ -35,14 +35,22 @@ export function formatCheckReport(result: LibraryManifestCheckResult, cwd: strin
 		}
 	}
 
-	sections.push(
-		"",
-		"Fix",
-		"- /library-hydrate",
-		`- or: python3 ~/.agents/skills/library/bin/library.py hydrate --project-root ${JSON.stringify(cwd)}`,
-	);
+	if (hasActionableIssues(result)) {
+		sections.push(
+			"",
+			"Fix",
+			"- /library-hydrate",
+			`- or: python3 ~/.agents/skills/library/bin/library.py hydrate --project-root ${JSON.stringify(cwd)}`,
+		);
+	} else {
+		sections.push("", "Status", "- healthy");
+	}
 
 	return sections.join("\n");
+}
+
+function hasActionableIssues(result: LibraryManifestCheckResult): boolean {
+	return result.issues.length > 0 || result.results.some((item) => item.status !== "installed-local" && item.status !== "installed-global");
 }
 
 export function formatHydrateResult(stdout: string, stderr: string): string {
