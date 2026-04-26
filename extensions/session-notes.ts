@@ -38,7 +38,16 @@ const HEIGHT_STEP = 2;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type NoteSource = "user" | "agent";
+export type NoteSource = "user" | "agent";
+
+export interface SessionNotesPanelSnapshot {
+	content: string;
+	noteId: number;
+	totalNotes: number;
+	noteSource: NoteSource;
+	scrollOffset: number;
+	maxLines: number;
+}
 
 type PickerAction =
 	| { type: "new_blank" }
@@ -79,7 +88,7 @@ const defaultState = (): PinState => ({
 
 // ─── Widget component ─────────────────────────────────────────────────────────
 
-class PinWidgetComponent {
+export class PinWidgetComponent {
 	constructor(
 		private theme: Theme,
 		private content: string,
@@ -143,6 +152,18 @@ class PinWidgetComponent {
 	}
 
 	invalidate(): void {}
+}
+
+export function renderSessionNotesPanelSnapshot(theme: Theme, snapshot: SessionNotesPanelSnapshot, width: number): string[] {
+	return new PinWidgetComponent(
+		theme,
+		snapshot.content,
+		snapshot.noteId,
+		snapshot.totalNotes,
+		snapshot.noteSource,
+		snapshot.scrollOffset,
+		snapshot.maxLines,
+	).render(width);
 }
 
 class TimelinePickerComponent {

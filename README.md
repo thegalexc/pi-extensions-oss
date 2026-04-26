@@ -66,6 +66,8 @@ It is built for the moment when a session is going well, useful snippets are fly
 
 ![Session Notes panel screenshot](public/session-notes-panel-screenshot.png)
 
+Regenerate the panel screenshot with `pnpm run generate-assets`.
+
 #### Timeline picker
 
 ![Session Notes timeline screenshot](public/session-notes-screenshot.png)

@@ -40,6 +40,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "generate-assets": "pnpm exec jiti scripts/generate-demo-assets.ts",
     "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts extensions/session-context/session-context.test.ts"
   },
   "overrides": {
