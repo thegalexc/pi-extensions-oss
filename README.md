@@ -2,12 +2,13 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`session-context` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
 | Extension | What it does |
 |---|---|
+| [`session-context`](#session-context) | Browse another persisted session by exact id and import only selected high-signal excerpts |
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
 | [`aside`](#aside) | Tool-free side-question overlay with bounded current-session context |
 | [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
@@ -16,6 +17,36 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | `status` | Package-level footer status chip showing the loaded OSS version |
+
+---
+
+## session-context
+
+`/session-context <session-id> [query]` opens a focused browser for another persisted Pi session and lets you import only the excerpts you want.
+
+It is built for the moment when you have a useful earlier session, want to reuse just the relevant pieces, and do not want to dump a whole transcript into the current prompt.
+
+### Highlights
+
+- exact session targeting by persisted session id from `/session`
+- deterministic chunk extraction for user goals, plans, conclusions, compaction summaries, labels, and semantic tool findings
+- optional query-aware ranking so relevant excerpts float to the top
+- multi-select browser overlay with preview and selection limits
+- compact imported custom message payload that stays within a bounded character budget
+- warning when the source session cwd differs from the current cwd
+
+### What it is good for
+
+- pulling forward the useful part of a previous coding session
+- reusing a prior plan or conclusion without reopening that whole transcript
+- importing only the parts of a cross-repo session that matter right now
+- carrying forward high-signal tool findings without bringing noisy shell output
+
+### Command
+
+| Command | Purpose |
+| --- | --- |
+| `/session-context <session-id> [query]` | Browse, select, and import focused context from another persisted session |
 
 ---
 
@@ -308,6 +339,7 @@ pi-extensions-oss/
 │   ├── aside/
 │   ├── browser-screenshot.ts
 │   ├── screenshots-picker/
+│   ├── session-context/
 │   ├── session-notes.ts
 │   ├── status.ts
 │   └── todo.ts

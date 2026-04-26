@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.23
+
+- add the public `session-context` extension, moved from the private `pi-extensions` package into this OSS package
+- store it under `extensions/session-context/` so the folder name now matches the command and feature name instead of the old `session-info` carryover
+- add the `session-context` regression test to the package test suite and refresh package metadata and docs
+
 ## 0.2.22
 
 - add a jiti-backed `library-manifest` entrypoint smoke test so the package test suite covers the real extension entrypoint shape, not only helper modules
