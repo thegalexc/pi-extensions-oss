@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.24
+
+- add `compact-update-notice`, a tiny Pi extension that replaces the large boxed startup update notice with a compact footer chip
+- format the chip as `* <version> Available` using the theme's `mdHeading` color so it matches Pi's softer yellow heading tone instead of the loud warning block
+- compact package update warnings into the same footer status area and cover the behavior with a focused regression test
+
 ## 0.2.23
 
 - add the public `session-context` extension, moved from the private `pi-extensions` package into this OSS package
