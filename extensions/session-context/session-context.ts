@@ -13,6 +13,8 @@ import {
 
 export * from "./session-context-core.js";
 
+export const MIN_SESSION_CONTEXT_WIDTH = 72;
+
 export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionCommandContext, args: string): Promise<void> {
 	if (!ctx.hasUI) {
 		ctx.ui.notify("/session-context requires interactive mode", "error");
@@ -20,6 +22,12 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 	}
 	if (!ctx.isIdle()) {
 		ctx.ui.notify("Wait for the current response to finish before importing session context", "warning");
+		return;
+	}
+
+	const terminalWidth = process.stdout.columns ?? 0;
+	if (terminalWidth > 0 && terminalWidth < MIN_SESSION_CONTEXT_WIDTH) {
+		ctx.ui.notify(`/session-context needs a terminal at least ${MIN_SESSION_CONTEXT_WIDTH} columns wide. Current width: ${terminalWidth}.`, "warning");
 		return;
 	}
 

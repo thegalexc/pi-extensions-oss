@@ -11,9 +11,14 @@ function moduleHref(tsRelativePath: string): string {
 	return new URL(tsRelativePath.replace(/\.ts$/, ".js"), import.meta.url).href;
 }
 
-async function loadModule(): Promise<any> {
+async function loadCoreModule(): Promise<any> {
 	const jiti = createJiti(import.meta.url, { moduleCache: false });
 	return jiti.import(moduleHref("./session-context-core.ts"));
+}
+
+async function loadCommandModule(): Promise<any> {
+	const jiti = createJiti(import.meta.url, { moduleCache: false });
+	return jiti.import(moduleHref("./session-context.ts"));
 }
 
 function makeEntries(): SessionEntry[] {
@@ -118,7 +123,7 @@ function makeEntries(): SessionEntry[] {
 }
 
 test("parseSessionContextArgs enforces exact session id and optional query", async () => {
-	const { parseSessionContextArgs } = await loadModule();
+	const { parseSessionContextArgs } = await loadCoreModule();
 	assert.deepEqual(parseSessionContextArgs("019dc6a2-0349-748c-a4fb-613ab0276cc7 search terms"), {
 		sessionId: "019dc6a2-0349-748c-a4fb-613ab0276cc7",
 		query: "search terms",
@@ -127,7 +132,7 @@ test("parseSessionContextArgs enforces exact session id and optional query", asy
 });
 
 test("extractSessionChunks classifies deterministic high-signal excerpts", async () => {
-	const { extractSessionChunks } = await loadModule();
+	const { extractSessionChunks } = await loadCoreModule();
 	const chunks = extractSessionChunks(makeEntries());
 	assert.equal(chunks.some((chunk: any) => chunk.type === "user_goal"), true);
 	assert.equal(chunks.some((chunk: any) => chunk.type === "assistant_conclusion"), true);
@@ -140,7 +145,7 @@ test("extractSessionChunks classifies deterministic high-signal excerpts", async
 });
 
 test("rankSessionChunks prefers query matches and breaks ties deterministically", async () => {
-	const { extractSessionChunks, rankSessionChunks } = await loadModule();
+	const { extractSessionChunks, rankSessionChunks } = await loadCoreModule();
 	const ranked = rankSessionChunks(extractSessionChunks(makeEntries()), "browser");
 	assert.equal(ranked[0]?.title.includes("Branch") || ranked[0]?.title.includes("Assistant") || ranked[0]?.title.includes("Checkpoint"), true);
 	for (let index = 1; index < ranked.length; index++) {
@@ -151,7 +156,7 @@ test("rankSessionChunks prefers query matches and breaks ties deterministically"
 });
 
 test("formatImportedSessionContext truncates and fits within the import budget", async () => {
-	const { formatImportedSessionContext } = await loadModule();
+	const { formatImportedSessionContext } = await loadCoreModule();
 	const longText = "A".repeat(2600);
 	const chunks = Array.from({ length: 5 }, (_, index) => ({
 		id: `chunk-${index}`,
@@ -177,4 +182,46 @@ test("formatImportedSessionContext truncates and fits within the import budget",
 	assert.equal(formatted.tooLarge, false);
 	assert.equal(formatted.truncated, true);
 	assert.equal(formatted.content.length <= 5000, true);
+});
+
+test("runSessionContextCommand fails fast on narrow terminals instead of opening an invisible overlay", async () => {
+	const { MIN_SESSION_CONTEXT_WIDTH, runSessionContextCommand } = await loadCommandModule();
+	const originalColumns = process.stdout.columns;
+	Object.defineProperty(process.stdout, "columns", {
+		configurable: true,
+		value: MIN_SESSION_CONTEXT_WIDTH - 1,
+	});
+
+	const notifications: Array<{ message: string; level: string }> = [];
+	const ui = {
+		notify: (message: string, level: string) => {
+			notifications.push({ message, level });
+		},
+		setStatus: () => {
+			throw new Error("setStatus should not run on narrow terminals");
+		},
+	};
+	const ctx = {
+		hasUI: true,
+		ui,
+		isIdle: () => true,
+	} as any;
+	const pi = {
+		sendMessage: () => {
+			throw new Error("sendMessage should not run on narrow terminals");
+		},
+	} as any;
+
+	try {
+		await runSessionContextCommand(pi, ctx, "019dc6a2-0349-748c-a4fb-613ab0276cc7");
+	} finally {
+		Object.defineProperty(process.stdout, "columns", {
+			configurable: true,
+			value: originalColumns,
+		});
+	}
+
+	assert.equal(notifications.length, 1);
+	assert.equal(notifications[0]?.level, "warning");
+	assert.match(notifications[0]?.message ?? "", /needs a terminal at least/i);
 });
