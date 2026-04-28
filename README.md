@@ -29,7 +29,7 @@ It is built for the moment when you have a useful earlier session, want to reuse
 
 ### Demo
 
-![Pluck browser screenshot](public/pluck-browser-screenshot.png)
+![Pluck demo](public/pluck-demo.gif)
 
 ### Highlights
 
