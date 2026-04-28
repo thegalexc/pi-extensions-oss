@@ -29,9 +29,7 @@ It is built for the moment when you have a useful earlier session, want to reuse
 
 ### Demo
 
-[![Pluck demo video](public/pluck-demo-poster.png)](https://github.com/thegalexc/pi-extensions-oss/releases/download/v0.2.27/pluck-demo.mp4)
-
-_Click the poster to open the MP4 demo. GitHub README video handling is less predictable than normal images, so the repo uses lightweight poster images that link to GitHub-hosted MP4 assets._
+![Pluck demo](public/pluck-demo.gif)
 
 ### Highlights
 
@@ -67,9 +65,7 @@ It is built for the moment when a session is going well, useful snippets are fly
 
 #### Demo video
 
-[![Session Notes demo video](public/session-notes-demo-poster.png)](https://github.com/thegalexc/pi-extensions-oss/releases/download/v0.2.27/session-notes-demo.mp4)
-
-_Click the poster to open the MP4 demo. GitHub README video handling is less predictable than normal images, so the repo uses lightweight poster images that link to GitHub-hosted MP4 assets._
+![Session Notes demo](public/session-notes-demo.gif)
 
 #### Persistent panel
 

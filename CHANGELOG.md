@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.28
+
+- restore inline README demo GIFs for `pluck` and `session-notes` because GitHub README video linking proved worse than the normal inline GIF experience
+- regenerate both README demo GIFs with the newer dual-output CleanShot workflow so the README gets smaller, more focused teaser loops instead of bulky long-form artifacts
+- keep the richer MP4 output path for non-README surfaces while returning this repo to the GitHub-native inline demo pattern
+
 ## 0.2.27
 
 - replace the README demo GIF embeds with poster images that link to GitHub-hosted MP4 assets so text-heavy demos keep much better quality at a much smaller size
