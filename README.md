@@ -275,6 +275,16 @@ The extension uses a conservative `7500px` image-height threshold to stay under 
 
 When Pi detects a new core version, the extension shows `* <version> Available` in the footer. If package updates are also pending, it folds them into the same status area instead of opening another large startup block.
 
+### Before and after
+
+#### Default startup box
+
+![Compact update notice default boxed warning](public/compact-update-notice-startup-box.png)
+
+#### Compact footer chip
+
+![Compact update notice footer chip](public/compact-update-notice-footer-chip.png)
+
 ### What it is good for
 
 - keeping startup noise low in fresh sessions
