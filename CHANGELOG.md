@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.25
+
+- fix `/session-context` so it no longer appears to hang when the focused browser overlay would otherwise be invisible
+- add a narrow-terminal guard with a clear warning instead of dropping into a stuck-looking state
+- remove the overlay visibility gate that could still open a hidden modal in pane-width mismatch cases
+
 ## 0.2.24
 
 - add `compact-update-notice`, a tiny Pi extension that replaces the large boxed startup update notice with a compact footer chip
