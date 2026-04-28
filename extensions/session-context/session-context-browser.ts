@@ -20,7 +20,6 @@ export async function openSessionContextBrowser(
 				maxHeight: "84%",
 				anchor: "center",
 				margin: 1,
-				visible: (termWidth) => termWidth >= 72,
 			},
 		},
 	);
