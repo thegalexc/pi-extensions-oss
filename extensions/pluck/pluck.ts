@@ -1,37 +1,37 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@mariozechner/pi-coding-agent";
 import { SessionManager } from "@mariozechner/pi-coding-agent";
-import { openSessionContextBrowser } from "./session-context-browser.js";
+import { openPluckBrowser } from "./pluck-browser.js";
 import {
-	SESSION_CONTEXT_CUSTOM_TYPE,
-	formatImportedSessionContext,
-	parseSessionContextArgs,
-	rankSessionChunks,
-	resolveTargetSession,
-	extractSessionChunks,
-	type SessionContextMetadata,
-} from "./session-context-core.js";
+	PLUCK_CUSTOM_TYPE,
+	formatImportedPluck,
+	parsePluckArgs,
+	rankPluckChunks,
+	resolvePluckTargetSession,
+	extractPluckChunks,
+	type PluckMetadata,
+} from "./pluck-core.js";
 
-export * from "./session-context-core.js";
+export * from "./pluck-core.js";
 
-export const MIN_SESSION_CONTEXT_WIDTH = 72;
+export const MIN_PLUCK_WIDTH = 72;
 
-export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionCommandContext, args: string): Promise<void> {
+export async function runPluckCommand(pi: ExtensionAPI, ctx: ExtensionCommandContext, args: string): Promise<void> {
 	if (!ctx.hasUI) {
-		ctx.ui.notify("/session-context requires interactive mode", "error");
+		ctx.ui.notify("/pluck requires interactive mode", "error");
 		return;
 	}
 	if (!ctx.isIdle()) {
-		ctx.ui.notify("Wait for the current response to finish before importing session context", "warning");
+		ctx.ui.notify("Wait for the current response to finish before running /pluck", "warning");
 		return;
 	}
 
 	const terminalWidth = process.stdout.columns ?? 0;
-	if (terminalWidth > 0 && terminalWidth < MIN_SESSION_CONTEXT_WIDTH) {
-		ctx.ui.notify(`/session-context needs a terminal at least ${MIN_SESSION_CONTEXT_WIDTH} columns wide. Current width: ${terminalWidth}.`, "warning");
+	if (terminalWidth > 0 && terminalWidth < MIN_PLUCK_WIDTH) {
+		ctx.ui.notify(`/pluck needs a terminal at least ${MIN_PLUCK_WIDTH} columns wide. Current width: ${terminalWidth}.`, "warning");
 		return;
 	}
 
-	const parsed = parseSessionContextArgs(args);
+	const parsed = parsePluckArgs(args);
 	if ("error" in parsed) {
 		ctx.ui.notify(parsed.error, "warning");
 		return;
@@ -43,9 +43,9 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 		return;
 	}
 
-	ctx.ui.setStatus("session-context", "Resolving session context...");
+	ctx.ui.setStatus("pluck", "Resolving plucked context...");
 	try {
-		const targetInfo = await resolveTargetSession(parsed.sessionId);
+		const targetInfo = await resolvePluckTargetSession(parsed.sessionId);
 		if (!targetInfo) {
 			ctx.ui.notify(`Session not found: ${parsed.sessionId}`, "error");
 			return;
@@ -53,13 +53,13 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 
 		const targetSession = SessionManager.open(targetInfo.path);
 		const entries = targetSession.getEntries();
-		const chunks = rankSessionChunks(extractSessionChunks(entries), parsed.query);
+		const chunks = rankPluckChunks(extractPluckChunks(entries), parsed.query);
 		if (chunks.length === 0) {
 			ctx.ui.notify("No useful context candidates found in target session", "warning");
 			return;
 		}
 
-		const metadata: SessionContextMetadata = {
+		const metadata: PluckMetadata = {
 			sessionId: targetInfo.id,
 			sessionPath: targetInfo.path,
 			cwd: targetInfo.cwd,
@@ -69,13 +69,13 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 			crossCwd: targetInfo.cwd !== ctx.cwd,
 		};
 
-		const selected = await openSessionContextBrowser(ctx, metadata, chunks);
+		const selected = await openPluckBrowser(ctx, metadata, chunks);
 		if (!selected || selected.length === 0) {
-			ctx.ui.notify("Session context import cancelled", "info");
+			ctx.ui.notify("Pluck import cancelled", "info");
 			return;
 		}
 
-		const formatted = formatImportedSessionContext(metadata, selected);
+		const formatted = formatImportedPluck(metadata, selected);
 		if (formatted.tooLarge) {
 			ctx.ui.notify("Selected excerpts are too large to import together. Deselect some items and try again.", "warning");
 			return;
@@ -83,7 +83,7 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 
 		pi.sendMessage(
 			{
-				customType: SESSION_CONTEXT_CUSTOM_TYPE,
+				customType: PLUCK_CUSTOM_TYPE,
 				content: formatted.content,
 				display: true,
 				details: {
@@ -100,6 +100,6 @@ export async function runSessionContextCommand(pi: ExtensionAPI, ctx: ExtensionC
 			"info",
 		);
 	} finally {
-		ctx.ui.setStatus("session-context", undefined);
+		ctx.ui.setStatus("pluck", undefined);
 	}
 }

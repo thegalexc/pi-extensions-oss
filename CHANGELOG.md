@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.26
+
+- rename `/session-context` to `/pluck` across the public extension package
+- rename the extension folder, entrypoint files, docs, screenshot asset, and regression test path so the shipped surface and repo layout stay aligned
+- update the package metadata and command copy to advertise `pluck` consistently
+
 ## 0.2.25
 
 - fix `/session-context` so it no longer appears to hang when the focused browser overlay would otherwise be invisible

@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.25",
-  "description": "Productivity and resilience extensions for Pi: session context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, compact update status, branch-aware todos, and OSS version status",
+  "version": "0.2.26",
+  "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, compact update status, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -9,7 +9,7 @@
     "productivity",
     "terminal-ui",
     "session-notes",
-    "session-context",
+    "pluck",
     "aside",
     "notes",
     "screenshot",
@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/compact-update-notice/index.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts extensions/session-context/session-context.test.ts"
+    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/compact-update-notice/index.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts extensions/pluck/pluck.test.ts"
   },
   "overrides": {
     "basic-ftp": "5.3.0"

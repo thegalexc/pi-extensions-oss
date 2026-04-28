@@ -4,14 +4,14 @@ import {
 	HARD_CHARS_PER_CHUNK,
 	MAX_SELECTED_CHUNKS,
 	MAX_TOTAL_IMPORT_CHARS,
-	SESSION_CONTEXT_CUSTOM_TYPE,
+	PLUCK_CUSTOM_TYPE,
 	TARGET_CHARS_PER_CHUNK,
 	type FormattedImport,
-	type ParsedSessionContextArgs,
+	type ParsedPluckArgs,
 	type SessionChunk,
 	type SessionChunkType,
-	type SessionContextMetadata,
-} from "./session-context-types.js";
+	type PluckMetadata,
+} from "./pluck-types.js";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const GOAL_VERB_RE = /\b(need|want|build|fix|debug|review|plan|design|implement|investigate|audit|ship|replace|create|add)\b/i;
@@ -24,10 +24,10 @@ export {
 	HARD_CHARS_PER_CHUNK,
 	MAX_SELECTED_CHUNKS,
 	MAX_TOTAL_IMPORT_CHARS,
-	SESSION_CONTEXT_CUSTOM_TYPE,
+	PLUCK_CUSTOM_TYPE,
 	TARGET_CHARS_PER_CHUNK,
 };
-export type { FormattedImport, ParsedSessionContextArgs, SessionChunk, SessionChunkType, SessionContextMetadata };
+export type { FormattedImport, ParsedPluckArgs, SessionChunk, SessionChunkType, PluckMetadata };
 
 function cleanWhitespace(text: string): string {
 	return text.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -50,10 +50,10 @@ function timestampToNumber(timestamp: string | undefined): number {
 	return Number.isNaN(value) ? 0 : value;
 }
 
-export function parseSessionContextArgs(args: string): ParsedSessionContextArgs | { error: string } {
+export function parsePluckArgs(args: string): ParsedPluckArgs | { error: string } {
 	const trimmed = args.trim();
 	if (!trimmed) {
-		return { error: "Usage: /session-context <session-id> [query]. Run /session in the source session to copy its id." };
+		return { error: "Usage: /pluck <session-id> [query]. Run /session in the source session to copy its id." };
 	}
 	const firstSpace = trimmed.indexOf(" ");
 	const sessionId = firstSpace === -1 ? trimmed : trimmed.slice(0, firstSpace);
@@ -144,7 +144,7 @@ function isSemanticToolFinding(entry: SessionMessageEntry): boolean {
 	return true;
 }
 
-export function extractSessionChunks(entries: SessionEntry[]): SessionChunk[] {
+export function extractPluckChunks(entries: SessionEntry[]): SessionChunk[] {
 	const chunks: SessionChunk[] = [];
 	const byId = new Map(entries.map((entry) => [entry.id, entry]));
 	for (const entry of entries) {
@@ -216,7 +216,7 @@ const TYPE_WEIGHTS: Record<SessionChunkType, number> = {
 	tool_finding: 72,
 };
 
-export function rankSessionChunks(chunks: SessionChunk[], query?: string): SessionChunk[] {
+export function rankPluckChunks(chunks: SessionChunk[], query?: string): SessionChunk[] {
 	const tokens = queryTokens(query);
 	const maxTimestamp = chunks.reduce((max, chunk) => Math.max(max, chunk.timestamp), 0);
 	return [...chunks]
@@ -247,7 +247,7 @@ export function rankSessionChunks(chunks: SessionChunk[], query?: string): Sessi
 		});
 }
 
-export function formatImportedSessionContext(metadata: SessionContextMetadata, chunks: SessionChunk[]): FormattedImport {
+export function formatImportedPluck(metadata: PluckMetadata, chunks: SessionChunk[]): FormattedImport {
 	const selected = chunks.slice(0, MAX_SELECTED_CHUNKS);
 	let truncated = false;
 	const importedChunks = selected.map((chunk) => {
@@ -257,7 +257,7 @@ export function formatImportedSessionContext(metadata: SessionContextMetadata, c
 	});
 
 	const baseHeader = [
-		"Imported session context",
+		"Imported plucked context",
 		"",
 		"Source",
 		`- Session ID: ${metadata.sessionId}`,
@@ -302,7 +302,7 @@ export function formatImportedSessionContext(metadata: SessionContextMetadata, c
 		}
 }
 
-export async function resolveTargetSession(sessionId: string): Promise<SessionInfo | undefined> {
+export async function resolvePluckTargetSession(sessionId: string): Promise<SessionInfo | undefined> {
 	const sessions = await SessionManager.listAll();
 	return sessions.find((session) => session.id.toLowerCase() === sessionId.toLowerCase());
 }

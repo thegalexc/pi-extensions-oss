@@ -2,13 +2,13 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`session-context` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
 | Extension | What it does |
 |---|---|
-| [`session-context`](#session-context) | Browse another persisted session by exact id and import only selected high-signal excerpts |
+| [`pluck`](#pluck) | Browse another persisted session by exact id and import only selected high-signal excerpts |
 | [`session-notes`](#session-notes) | Zero-token session scratchpad with persistent panel and interleaved timeline |
 | [`aside`](#aside) | Tool-free side-question overlay with bounded current-session context |
 | [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
@@ -21,11 +21,15 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
 ---
 
-## session-context
+## pluck
 
-`/session-context <session-id> [query]` opens a focused browser for another persisted Pi session and lets you import only the excerpts you want.
+`/pluck <session-id> [query]` opens a focused browser for another persisted Pi session and lets you import only the excerpts you want.
 
 It is built for the moment when you have a useful earlier session, want to reuse just the relevant pieces, and do not want to dump a whole transcript into the current prompt.
+
+### Demo
+
+![Pluck browser screenshot](public/pluck-browser-screenshot.png)
 
 ### Highlights
 
@@ -47,7 +51,7 @@ It is built for the moment when you have a useful earlier session, want to reuse
 
 | Command | Purpose |
 | --- | --- |
-| `/session-context <session-id> [query]` | Browse, select, and import focused context from another persisted session |
+| `/pluck <session-id> [query]` | Browse, select, and import focused context from another persisted session |
 
 ---
 
@@ -364,7 +368,7 @@ pi-extensions-oss/
 │   ├── aside/
 │   ├── browser-screenshot.ts
 │   ├── screenshots-picker/
-│   ├── session-context/
+│   ├── pluck/
 │   ├── session-notes.ts
 │   ├── status.ts
 │   └── todo.ts

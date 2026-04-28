@@ -1,18 +1,18 @@
 import type { ExtensionCommandContext, Theme } from "@mariozechner/pi-coding-agent";
 import { Key, matchesKey, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@mariozechner/pi-tui";
 import type { Component } from "@mariozechner/pi-tui";
-import { MAX_SELECTED_CHUNKS, type SessionChunk, type SessionContextMetadata } from "./session-context-types.js";
+import { MAX_SELECTED_CHUNKS, type SessionChunk, type PluckMetadata } from "./pluck-types.js";
 
 const MAX_VISIBLE_ITEMS = 9;
 const MAX_PREVIEW_LINES = 10;
 
-export async function openSessionContextBrowser(
+export async function openPluckBrowser(
 	ctx: ExtensionCommandContext,
-	metadata: SessionContextMetadata,
+	metadata: PluckMetadata,
 	chunks: SessionChunk[],
 ): Promise<SessionChunk[] | undefined> {
 	return ctx.ui.custom<SessionChunk[] | undefined>(
-		(tui, theme, _kb, done) => new SessionContextBrowserComponent(tui, theme, metadata, chunks, done),
+		(tui, theme, _kb, done) => new PluckBrowserComponent(tui, theme, metadata, chunks, done),
 		{
 			overlay: true,
 			overlayOptions: {
@@ -25,7 +25,7 @@ export async function openSessionContextBrowser(
 	);
 }
 
-class SessionContextBrowserComponent implements Component {
+class PluckBrowserComponent implements Component {
 	private selectedIndex = 0;
 	private selectedIds = new Set<string>();
 	private cachedWidth?: number;
@@ -35,7 +35,7 @@ class SessionContextBrowserComponent implements Component {
 	constructor(
 		private tui: { requestRender(): void; terminal: { rows: number } },
 		private theme: Theme,
-		private metadata: SessionContextMetadata,
+		private metadata: PluckMetadata,
 		private chunks: SessionChunk[],
 		private done: (result: SessionChunk[] | undefined) => void,
 	) {}
@@ -113,7 +113,7 @@ class SessionContextBrowserComponent implements Component {
 		const border = this.theme.fg("border", `╭${"─".repeat(innerWidth)}╮`);
 		const bottom = this.theme.fg("border", `╰${"─".repeat(innerWidth)}╯`);
 		lines.push(border);
-		lines.push(this.row(innerWidth, this.theme.fg("accent", this.theme.bold("Session Context Browser"))));
+		lines.push(this.row(innerWidth, this.theme.fg("accent", this.theme.bold("Pluck Browser"))));
 		lines.push(this.row(innerWidth, `${this.theme.fg("dim", "Session:")} ${this.metadata.sessionId}`));
 		lines.push(this.row(innerWidth, `${this.theme.fg("dim", "CWD:")} ${this.metadata.cwd}`));
 		if (this.metadata.query) lines.push(this.row(innerWidth, `${this.theme.fg("dim", "Query:")} ${this.metadata.query}`));

@@ -1,4 +1,4 @@
-export const SESSION_CONTEXT_CUSTOM_TYPE = "session-context";
+export const PLUCK_CUSTOM_TYPE = "pluck";
 export const MAX_SELECTED_CHUNKS = 5;
 export const TARGET_CHARS_PER_CHUNK = 1200;
 export const HARD_CHARS_PER_CHUNK = 1600;
@@ -25,7 +25,7 @@ export type SessionChunk = {
 	tags: string[];
 };
 
-export type SessionContextMetadata = {
+export type PluckMetadata = {
 	sessionId: string;
 	sessionPath: string;
 	cwd: string;
@@ -35,7 +35,7 @@ export type SessionContextMetadata = {
 	crossCwd: boolean;
 };
 
-export type ParsedSessionContextArgs = {
+export type ParsedPluckArgs = {
 	sessionId: string;
 	query?: string;
 };

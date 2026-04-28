@@ -1,11 +1,11 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { runSessionContextCommand } from "./session-context.js";
+import { runPluckCommand } from "./pluck.js";
 
-export default function sessionContextExtension(pi: ExtensionAPI) {
-	pi.registerCommand("session-context", {
+export default function pluckExtension(pi: ExtensionAPI) {
+	pi.registerCommand("pluck", {
 		description: "Browse and import focused context from another persisted Pi session by exact session id from /session",
 		handler: async (args, ctx) => {
-			await runSessionContextCommand(pi, ctx, args);
+			await runPluckCommand(pi, ctx, args);
 		},
 	});
 }

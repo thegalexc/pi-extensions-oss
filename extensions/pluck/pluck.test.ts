@@ -13,12 +13,12 @@ function moduleHref(tsRelativePath: string): string {
 
 async function loadCoreModule(): Promise<any> {
 	const jiti = createJiti(import.meta.url, { moduleCache: false });
-	return jiti.import(moduleHref("./session-context-core.ts"));
+	return jiti.import(moduleHref("./pluck-core.ts"));
 }
 
 async function loadCommandModule(): Promise<any> {
 	const jiti = createJiti(import.meta.url, { moduleCache: false });
-	return jiti.import(moduleHref("./session-context.ts"));
+	return jiti.import(moduleHref("./pluck.ts"));
 }
 
 function makeEntries(): SessionEntry[] {
@@ -122,18 +122,18 @@ function makeEntries(): SessionEntry[] {
 	];
 }
 
-test("parseSessionContextArgs enforces exact session id and optional query", async () => {
-	const { parseSessionContextArgs } = await loadCoreModule();
-	assert.deepEqual(parseSessionContextArgs("019dc6a2-0349-748c-a4fb-613ab0276cc7 search terms"), {
+test("parsePluckArgs enforces exact session id and optional query", async () => {
+	const { parsePluckArgs } = await loadCoreModule();
+	assert.deepEqual(parsePluckArgs("019dc6a2-0349-748c-a4fb-613ab0276cc7 search terms"), {
 		sessionId: "019dc6a2-0349-748c-a4fb-613ab0276cc7",
 		query: "search terms",
 	});
-	assert.match(parseSessionContextArgs("not-a-session-id").error, /Invalid session id/);
+	assert.match(parsePluckArgs("not-a-session-id").error, /Invalid session id/);
 });
 
-test("extractSessionChunks classifies deterministic high-signal excerpts", async () => {
-	const { extractSessionChunks } = await loadCoreModule();
-	const chunks = extractSessionChunks(makeEntries());
+test("extractPluckChunks classifies deterministic high-signal excerpts", async () => {
+	const { extractPluckChunks } = await loadCoreModule();
+	const chunks = extractPluckChunks(makeEntries());
 	assert.equal(chunks.some((chunk: any) => chunk.type === "user_goal"), true);
 	assert.equal(chunks.some((chunk: any) => chunk.type === "assistant_conclusion"), true);
 	assert.equal(chunks.some((chunk: any) => chunk.type === "assistant_plan"), true);
@@ -144,9 +144,9 @@ test("extractSessionChunks classifies deterministic high-signal excerpts", async
 	assert.equal(chunks.some((chunk: any) => chunk.type === "tool_finding" && chunk.title.includes("bash")), false);
 });
 
-test("rankSessionChunks prefers query matches and breaks ties deterministically", async () => {
-	const { extractSessionChunks, rankSessionChunks } = await loadCoreModule();
-	const ranked = rankSessionChunks(extractSessionChunks(makeEntries()), "browser");
+test("rankPluckChunks prefers query matches and breaks ties deterministically", async () => {
+	const { extractPluckChunks, rankPluckChunks } = await loadCoreModule();
+	const ranked = rankPluckChunks(extractPluckChunks(makeEntries()), "browser");
 	assert.equal(ranked[0]?.title.includes("Branch") || ranked[0]?.title.includes("Assistant") || ranked[0]?.title.includes("Checkpoint"), true);
 	for (let index = 1; index < ranked.length; index++) {
 		const prev = ranked[index - 1]!;
@@ -155,8 +155,8 @@ test("rankSessionChunks prefers query matches and breaks ties deterministically"
 	}
 });
 
-test("formatImportedSessionContext truncates and fits within the import budget", async () => {
-	const { formatImportedSessionContext } = await loadCoreModule();
+test("formatImportedPluck truncates and fits within the import budget", async () => {
+	const { formatImportedPluck } = await loadCoreModule();
 	const longText = "A".repeat(2600);
 	const chunks = Array.from({ length: 5 }, (_, index) => ({
 		id: `chunk-${index}`,
@@ -169,7 +169,7 @@ test("formatImportedSessionContext truncates and fits within the import budget",
 		score: 1,
 		tags: [],
 	}));
-	const formatted = formatImportedSessionContext(
+	const formatted = formatImportedPluck(
 		{
 			sessionId: "019dc6a2-0349-748c-a4fb-613ab0276cc7",
 			sessionPath: "/tmp/session.jsonl",
@@ -184,12 +184,12 @@ test("formatImportedSessionContext truncates and fits within the import budget",
 	assert.equal(formatted.content.length <= 5000, true);
 });
 
-test("runSessionContextCommand fails fast on narrow terminals instead of opening an invisible overlay", async () => {
-	const { MIN_SESSION_CONTEXT_WIDTH, runSessionContextCommand } = await loadCommandModule();
+test("runPluckCommand fails fast on narrow terminals instead of opening an invisible overlay", async () => {
+	const { MIN_PLUCK_WIDTH, runPluckCommand } = await loadCommandModule();
 	const originalColumns = process.stdout.columns;
 	Object.defineProperty(process.stdout, "columns", {
 		configurable: true,
-		value: MIN_SESSION_CONTEXT_WIDTH - 1,
+		value: MIN_PLUCK_WIDTH - 1,
 	});
 
 	const notifications: Array<{ message: string; level: string }> = [];
@@ -213,7 +213,7 @@ test("runSessionContextCommand fails fast on narrow terminals instead of opening
 	} as any;
 
 	try {
-		await runSessionContextCommand(pi, ctx, "019dc6a2-0349-748c-a4fb-613ab0276cc7");
+		await runPluckCommand(pi, ctx, "019dc6a2-0349-748c-a4fb-613ab0276cc7");
 	} finally {
 		Object.defineProperty(process.stdout, "columns", {
 			configurable: true,

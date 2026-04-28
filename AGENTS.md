@@ -1,6 +1,6 @@
 # pi-extensions-oss
 
-Open-source Pi extension repo for GalexC. Ships public extensions such as `session-context`, `session-notes`, `aside`, `browser-screenshot`, `screenshots-picker`, `todo`, and `status`.
+Open-source Pi extension repo for GalexC. Ships public extensions such as `pluck`, `session-notes`, `aside`, `browser-screenshot`, `screenshots-picker`, `todo`, and `status`.
 
 ## Conventions
 
