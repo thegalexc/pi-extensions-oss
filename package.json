@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.26",
+  "version": "0.2.27",
   "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, compact update status, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",

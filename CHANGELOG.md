@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.27
+
+- replace the README demo GIF embeds with poster images that link to GitHub-hosted MP4 assets so text-heavy demos keep much better quality at a much smaller size
+- add committed poster PNGs for `pluck` and `session-notes` and remove the old repo-local demo GIFs
+- standardize the README demo pattern around external MP4 assets rather than large in-repo GIF files
+
 ## 0.2.26
 
 - rename `/session-context` to `/pluck` across the public extension package
