@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, compact update status, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
@@ -57,10 +57,10 @@
     "@sinclair/typebox": "*"
   },
   "devDependencies": {
-    "@mariozechner/pi-agent-core": "^0.70.0",
-    "@mariozechner/pi-ai": "^0.70.0",
-    "@mariozechner/pi-coding-agent": "^0.70.0",
-    "@mariozechner/pi-tui": "^0.70.0",
+    "@mariozechner/pi-agent-core": "^0.70.6",
+    "@mariozechner/pi-ai": "^0.70.6",
+    "@mariozechner/pi-coding-agent": "^0.70.6",
+    "@mariozechner/pi-tui": "^0.70.6",
     "@sinclair/typebox": "^0.34.48",
     "@types/node": "^24.5.2",
     "jiti": "^2.6.1",

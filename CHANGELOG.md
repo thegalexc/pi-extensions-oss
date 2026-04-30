@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.29
+
+- bump Pi development dependencies from `^0.70.0` to `^0.70.6` so local validation tracks the current Pi 0.70.x line more closely
+
 ## 0.2.28
 
 - restore inline README demo GIFs for `pluck` and `session-notes` because GitHub README video linking proved worse than the normal inline GIF experience
