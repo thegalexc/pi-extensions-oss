@@ -25,10 +25,10 @@
  *   /session-notes - Open the session notes timeline picker (same as Ctrl+Alt+K)
  */
 
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { DynamicBorder } from "@mariozechner/pi-coding-agent";
-import type { Theme } from "@mariozechner/pi-coding-agent";
-import { Container, getKeybindings, Text, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { DynamicBorder } from "@earendil-works/pi-coding-agent";
+import type { Theme } from "@earendil-works/pi-coding-agent";
+import { Container, getKeybindings, Text, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
 const EXT_ID = "session-notes";
 const DEFAULT_MAX_LINES = 8;

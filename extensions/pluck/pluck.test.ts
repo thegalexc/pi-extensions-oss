@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
-import type { SessionEntry } from "@mariozechner/pi-coding-agent";
+import type { SessionEntry } from "@earendil-works/pi-coding-agent";
 
 function moduleHref(tsRelativePath: string): string {
 	const tsUrl = new URL(tsRelativePath, import.meta.url);

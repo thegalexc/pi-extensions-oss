@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 type StatusUI = {
 	setStatus(key: string, text: string | undefined): void;
@@ -45,8 +45,22 @@ function normalizeVersion(version: string): string {
 	return version.trim().replace(/^v/i, "");
 }
 
+async function resolvePiEntryHref(): Promise<string> {
+	for (const specifier of [
+		"@earendil-works/pi-coding-agent",
+		"@mariozechner/pi-coding-agent",
+	]) {
+		try {
+			return import.meta.resolve(specifier);
+		} catch {
+			// Try the next known package scope.
+		}
+	}
+	throw new Error("Unable to resolve the Pi coding agent package entrypoint");
+}
+
 export async function loadInteractiveModePrototype(): Promise<Record<PropertyKey, unknown>> {
-	const piEntryHref = import.meta.resolve("@mariozechner/pi-coding-agent");
+	const piEntryHref = await resolvePiEntryHref();
 	const piEntryPath = fileURLToPath(piEntryHref);
 	const interactiveModePath = path.join(path.dirname(piEntryPath), "modes", "interactive", "interactive-mode.js");
 	const interactiveModeHref = pathToFileURL(interactiveModePath).href;

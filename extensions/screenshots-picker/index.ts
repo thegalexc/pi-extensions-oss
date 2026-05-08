@@ -18,7 +18,7 @@ import { existsSync, readFileSync, readdirSync, statSync, unlinkSync } from "nod
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import {
 	Image,
 	Key,
@@ -29,7 +29,7 @@ import {
 	getImageDimensions as getTerminalImageDimensions,
 	matchesKey,
 	visibleWidth,
-} from "@mariozechner/pi-tui";
+} from "@earendil-works/pi-tui";
 import { globSync } from "glob";
 
 interface ScreenshotInfo {

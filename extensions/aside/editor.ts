@@ -1,4 +1,4 @@
-import { Editor, type EditorTheme, type TUI } from "@mariozechner/pi-tui";
+import { Editor, type EditorTheme, type TUI } from "@earendil-works/pi-tui";
 
 export interface AsideEditor {
 	focused: boolean;

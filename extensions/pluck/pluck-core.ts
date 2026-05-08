@@ -1,5 +1,5 @@
-import type { SessionEntry, SessionInfo, SessionMessageEntry } from "@mariozechner/pi-coding-agent";
-import { SessionManager } from "@mariozechner/pi-coding-agent";
+import type { SessionEntry, SessionInfo, SessionMessageEntry } from "@earendil-works/pi-coding-agent";
+import { SessionManager } from "@earendil-works/pi-coding-agent";
 import {
 	HARD_CHARS_PER_CHUNK,
 	MAX_SELECTED_CHUNKS,

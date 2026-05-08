@@ -1,5 +1,5 @@
-import { complete, type AssistantMessage, type Model, type UserMessage } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@mariozechner/pi-coding-agent";
+import { complete, type AssistantMessage, type Model, type UserMessage } from "@earendil-works/pi-ai";
+import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@earendil-works/pi-coding-agent";
 import {
 	CURSOR_MARKER,
 	type EditorTheme,
@@ -11,7 +11,7 @@ import {
 	type Focusable,
 	type OverlayHandle,
 	type TUI,
-} from "@mariozechner/pi-tui";
+} from "@earendil-works/pi-tui";
 import { buildAsideCapsule, serializeAsideCapsule, type AsideCapsule } from "./capsule.js";
 import { createAsideEditor, initializeAsideEditor, resolveAsidePreviewPrompt, type AsideEditor } from "./editor.js";
 import { formatAsidePromotion, formatElapsed, type AsideResult } from "./format.js";

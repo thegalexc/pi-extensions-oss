@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { checkLibraryManifest, getIssueCount } from "./check.js";
 import { formatCheckReport, formatHydrateResult, formatStartupWarning } from "./format.js";
 import { runLibraryHydrate } from "./hydrate.js";

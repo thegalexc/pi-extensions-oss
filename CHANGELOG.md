@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.30
+
+- migrate extension imports and package metadata to the `@earendil-works/*` Pi package scopes for Pi 0.74 compatibility
+- bump Pi dev pins to `^0.74.0` and align the compact update notice with the renamed upstream package entrypoint
+
 ## 0.2.29
 
 - bump Pi development dependencies from `^0.70.0` to `^0.70.6` so local validation tracks the current Pi 0.70.x line more closely
