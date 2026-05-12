@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.32
+
+- preserve distinct `pluck` checkpoints and tool findings even when they share the same visible text, instead of silently collapsing them during dedupe
+- filter low-signal query stopwords and reduce generic-query bias toward `user_goal` chunks so vague searches surface better answers more reliably
+- cap oversized tool findings and slightly downrank verbose raw tool output so it is less likely to crowd out concise assistant summaries
+
 ## 0.2.31
 
 - fix `/pluck` ranking so structured assistant summaries like "Where you’re at" surface above later session chatter

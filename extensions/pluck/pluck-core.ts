@@ -20,6 +20,25 @@ const CONCLUSION_RE = /\b(recommend|recommendation|decision|summary|bottom line|
 const STRUCTURED_SUMMARY_RE = /\b(where you[’']?re at|what needs your attention|already filled|decision checklist|open items|bottom line)\b/i;
 const TRIVIAL_USER_RE = /^(ok|okay|thanks|thank you|yep|yes|no|proceed|continue|go on)\.?$/i;
 const NOISY_TOOL_NAMES = new Set(["bash", "read", "edit", "write", "ls", "find", "grep"]);
+const MAX_TOOL_FINDING_CHARS = 700;
+const QUERY_STOPWORDS = new Set([
+	"a",
+	"an",
+	"the",
+	"this",
+	"that",
+	"these",
+	"those",
+	"thing",
+	"things",
+	"summary",
+	"summarize",
+	"please",
+	"help",
+	"me",
+	"my",
+	"our",
+]);
 
 export {
 	HARD_CHARS_PER_CHUNK,
@@ -136,14 +155,28 @@ function classifyAssistantText(text: string): SessionChunkType | undefined {
 	return undefined;
 }
 
+function toolFindingText(content: unknown): string {
+	return truncateText(extractTextFromContent(content), MAX_TOOL_FINDING_CHARS).text;
+}
+
 function isSemanticToolFinding(entry: SessionMessageEntry): boolean {
 	if (entry.message.role !== "toolResult") return false;
 	const toolName = entry.message.toolName?.toLowerCase?.() ?? "";
 	if (!toolName || NOISY_TOOL_NAMES.has(toolName)) return false;
 	const text = extractTextFromContent(entry.message.content as any);
 	if (!text || text.length < 20) return false;
-	if (text.length > 1200) return false;
+	if (text.length > 4000) return false;
 	return true;
+}
+
+function dedupeKeyForChunk(chunk: SessionChunk): string {
+	switch (chunk.type) {
+		case "label_checkpoint":
+		case "tool_finding":
+			return `${chunk.type}:${chunk.sourceEntryId}:${chunk.title.toLowerCase()}`;
+		default:
+			return `${chunk.type}:${normalizeInlineWhitespace(chunk.fullText).toLowerCase()}`;
+	}
 }
 
 export function extractPluckChunks(entries: SessionEntry[]): SessionChunk[] {
@@ -186,14 +219,14 @@ export function extractPluckChunks(entries: SessionEntry[]): SessionChunk[] {
 			continue;
 		}
 		if (message.role === "toolResult" && isSemanticToolFinding(entry)) {
-			const text = extractTextFromContent(message.content as any);
+			const text = toolFindingText(message.content as any);
 			chunks.push(buildChunk("tool_finding", entry.id, `Tool finding: ${message.toolName}`, text, ts, [message.toolName]));
 		}
 	}
 
 	const deduped = new Map<string, SessionChunk>();
 	for (const chunk of chunks) {
-		const key = `${chunk.type}:${normalizeInlineWhitespace(chunk.fullText).toLowerCase()}`;
+		const key = dedupeKeyForChunk(chunk);
 		if (!deduped.has(key)) deduped.set(key, chunk);
 	}
 	return Array.from(deduped.values());
@@ -205,7 +238,8 @@ function queryTokens(query: string | undefined): string[] {
 		.toLowerCase()
 		.split(/[^a-z0-9]+/)
 		.map((token) => token.trim())
-		.filter((token) => token.length >= 2);
+		.filter((token) => token.length >= 2)
+		.filter((token) => !QUERY_STOPWORDS.has(token));
 }
 
 const TYPE_WEIGHTS: Record<SessionChunkType, number> = {
@@ -227,18 +261,20 @@ export function rankPluckChunks(chunks: SessionChunk[], query?: string): Session
 			const agePenalty = maxTimestamp > 0 ? Math.min(30, Math.floor((maxTimestamp - chunk.timestamp) / (1000 * 60 * 30))) : 0;
 			score -= agePenalty;
 			if (chunk.type === "assistant_conclusion" && STRUCTURED_SUMMARY_RE.test(chunk.fullText)) score += 18;
+			if (chunk.type === "tool_finding") score -= Math.min(18, Math.floor(chunk.fullText.length / 90));
 			if (tokens.length > 0) {
 				const haystack = `${chunk.title}\n${chunk.preview}\n${chunk.fullText}\n${chunk.tags.join(" ")}`.toLowerCase();
 				const titleLower = chunk.title.toLowerCase();
 				const previewLower = chunk.preview.toLowerCase();
 				const joinedTags = chunk.tags.join(" ").toLowerCase();
+				const queryWeight = chunk.type === "user_goal" ? 0.55 : chunk.type === "tool_finding" ? 0.75 : 1;
 				for (const token of tokens) {
-					if (titleLower.includes(token)) score += 40;
-					if (previewLower.includes(token)) score += 20;
-					if (haystack.includes(token)) score += 10;
-					if (joinedTags.includes(token)) score += 8;
+					if (titleLower.includes(token)) score += 40 * queryWeight;
+					if (previewLower.includes(token)) score += 20 * queryWeight;
+					if (haystack.includes(token)) score += 10 * queryWeight;
+					if (joinedTags.includes(token)) score += 8 * queryWeight;
 				}
-				if (query && haystack.includes(query.toLowerCase())) score += 25;
+				if (query && haystack.includes(query.toLowerCase())) score += 25 * queryWeight;
 			}
 			return { ...chunk, score };
 		})

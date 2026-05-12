@@ -160,6 +160,71 @@ function makeEntriesWithThinkingSummary(): SessionEntry[] {
 	];
 }
 
+function makeEntriesWithDuplicateVisibleText(): SessionEntry[] {
+	return [
+		{
+			type: "message",
+			id: "a1",
+			parentId: null,
+			timestamp: "2026-05-12T00:00:00.000Z",
+			message: {
+				role: "assistant",
+				content: [{ type: "text", text: "Recommendation: same visible summary" }],
+				provider: "anthropic",
+				model: "claude",
+				api: "anthropic",
+				usage: { input: 1, output: 1, cacheRead: 0, cacheWrite: 0, totalTokens: 2, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+				stopReason: "stop",
+				timestamp: 1,
+			},
+		},
+		{
+			type: "label",
+			id: "l1",
+			parentId: "a1",
+			timestamp: "2026-05-12T00:01:00.000Z",
+			targetId: "a1",
+			label: "first-pass",
+		},
+		{
+			type: "label",
+			id: "l2",
+			parentId: "l1",
+			timestamp: "2026-05-12T00:02:00.000Z",
+			targetId: "a1",
+			label: "final",
+		},
+		{
+			type: "message",
+			id: "t1",
+			parentId: "l2",
+			timestamp: "2026-05-12T00:03:00.000Z",
+			message: {
+				role: "toolResult",
+				toolCallId: "call-1",
+				toolName: "todo",
+				content: [{ type: "text", text: "Added todo #1: same text across tools" }],
+				isError: false,
+				timestamp: 2,
+			},
+		},
+		{
+			type: "message",
+			id: "t2",
+			parentId: "t1",
+			timestamp: "2026-05-12T00:04:00.000Z",
+			message: {
+				role: "toolResult",
+				toolCallId: "call-2",
+				toolName: "custom",
+				content: [{ type: "text", text: "Added todo #1: same text across tools" }],
+				isError: false,
+				timestamp: 3,
+			},
+		},
+	];
+}
+
 test("parsePluckArgs enforces exact session id and optional query", async () => {
 	const { parsePluckArgs } = await loadCoreModule();
 	assert.deepEqual(parsePluckArgs("019dc6a2-0349-748c-a4fb-613ab0276cc7 search terms"), {
@@ -203,6 +268,105 @@ test("extractPluckChunks ignores assistant thinking and preserves the visible su
 	assert.match(summary.preview, /Where you’re at/);
 
 	const ranked = rankPluckChunks(chunks);
+	assert.equal(ranked[0]?.type, "assistant_conclusion");
+});
+
+test("extractPluckChunks preserves distinct labels and tool findings even when visible text matches", async () => {
+	const { extractPluckChunks } = await loadCoreModule();
+	const chunks = extractPluckChunks(makeEntriesWithDuplicateVisibleText());
+	assert.equal(chunks.filter((chunk: any) => chunk.type === "label_checkpoint").length, 2);
+	assert.equal(chunks.filter((chunk: any) => chunk.type === "tool_finding").length, 2);
+	assert.equal(chunks.some((chunk: any) => chunk.title === "Checkpoint: first-pass"), true);
+	assert.equal(chunks.some((chunk: any) => chunk.title === "Checkpoint: final"), true);
+	assert.equal(chunks.some((chunk: any) => chunk.title === "Tool finding: todo"), true);
+	assert.equal(chunks.some((chunk: any) => chunk.title === "Tool finding: custom"), true);
+});
+
+
+test("extractPluckChunks caps oversized tool findings instead of letting them dominate imports", async () => {
+	const { extractPluckChunks } = await loadCoreModule();
+	const giant = "X".repeat(2500);
+	const chunks = extractPluckChunks([
+		{
+			type: "message",
+			id: "t1",
+			parentId: null,
+			timestamp: "2026-05-12T00:00:00.000Z",
+			message: {
+				role: "toolResult",
+				toolCallId: "call-1",
+				toolName: "custom",
+				content: [{ type: "text", text: giant }],
+				isError: false,
+				timestamp: 1,
+			},
+		},
+	] as any);
+	assert.equal(chunks.length, 1);
+	assert.equal(chunks[0]?.type, "tool_finding");
+	assert.equal((chunks[0]?.fullText.length ?? 0) <= 700, true);
+	assert.match(chunks[0]?.fullText ?? "", /\[truncated\]$/);
+});
+
+test("rankPluckChunks resists generic query chatter and prefers strong assistant summaries", async () => {
+	const { rankPluckChunks } = await loadCoreModule();
+	const ranked = rankPluckChunks(
+		[
+			{
+				id: "a",
+				sourceEntryId: "a",
+				type: "assistant_conclusion",
+				title: "Assistant conclusion",
+				preview: "A precise funding summary",
+				fullText: "A precise funding summary for the CREO deal.",
+				timestamp: 10,
+				score: 0,
+				tags: [],
+			},
+			{
+				id: "b",
+				sourceEntryId: "b",
+				type: "user_goal",
+				title: "User goal",
+				preview: "please investigate the thing and summarize it for me",
+				fullText: "please investigate the thing and summarize it for me",
+				timestamp: 20,
+				score: 0,
+				tags: [],
+			},
+		],
+		"summarize the thing",
+	);
+	assert.equal(ranked[0]?.type, "assistant_conclusion");
+});
+
+
+test("rankPluckChunks downranks verbose tool findings relative to comparable answers", async () => {
+	const { rankPluckChunks } = await loadCoreModule();
+	const ranked = rankPluckChunks([
+		{
+			id: "a",
+			sourceEntryId: "a",
+			type: "assistant_conclusion",
+			title: "Assistant conclusion",
+			preview: "Useful concise answer",
+			fullText: "Useful concise answer about the deployment state.",
+			timestamp: 100,
+			score: 0,
+			tags: [],
+		},
+		{
+			id: "t",
+			sourceEntryId: "t",
+			type: "tool_finding",
+			title: "Tool finding: custom",
+			preview: "deployment state raw output",
+			fullText: "deployment state "+"X".repeat(680),
+			timestamp: 100,
+			score: 0,
+			tags: ["custom"],
+		},
+	], "deployment state");
 	assert.equal(ranked[0]?.type, "assistant_conclusion");
 });
 
