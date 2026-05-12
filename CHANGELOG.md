@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.31
+
+- fix `/pluck` ranking so structured assistant summaries like "Where you’re at" surface above later session chatter
+- ignore assistant thinking blocks when extracting pluckable chunks so previews and classification reflect the visible answer
+- add a regression test covering assistant messages that include both hidden thinking and a visible summary
+
 ## 0.2.30
 
 - migrate extension imports and package metadata to the `@earendil-works/*` Pi package scopes for Pi 0.74 compatibility

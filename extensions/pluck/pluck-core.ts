@@ -17,6 +17,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const GOAL_VERB_RE = /\b(need|want|build|fix|debug|review|plan|design|implement|investigate|audit|ship|replace|create|add)\b/i;
 const PLAN_RE = /(^|\n)\s*(?:\d+\.|[-*])\s+|\b(plan|execution plan|next step|next steps|implementation plan)\b/i;
 const CONCLUSION_RE = /\b(recommend|recommendation|decision|summary|bottom line|what to do now|verdict|conclusion|should)\b/i;
+const STRUCTURED_SUMMARY_RE = /\b(where you[’']?re at|what needs your attention|already filled|decision checklist|open items|bottom line)\b/i;
 const TRIVIAL_USER_RE = /^(ok|okay|thanks|thank you|yep|yes|no|proceed|continue|go on)\.?$/i;
 const NOISY_TOOL_NAMES = new Set(["bash", "read", "edit", "write", "ls", "find", "grep"]);
 
@@ -64,7 +65,7 @@ export function parsePluckArgs(args: string): ParsedPluckArgs | { error: string 
 	return { sessionId: sessionId.toLowerCase(), query: query ? query : undefined };
 }
 
-function extractTextFromContent(content: unknown): string {
+function extractTextFromContent(content: unknown, options: { includeThinking?: boolean } = {}): string {
 	if (typeof content === "string") return cleanWhitespace(content);
 	if (!Array.isArray(content)) return "";
 	const parts: string[] = [];
@@ -73,7 +74,7 @@ function extractTextFromContent(content: unknown): string {
 		if ("type" in block && block.type === "text" && "text" in block && typeof block.text === "string") {
 			parts.push(block.text);
 		}
-		if ("type" in block && block.type === "thinking" && "thinking" in block && typeof block.thinking === "string") {
+		if (options.includeThinking && "type" in block && block.type === "thinking" && "thinking" in block && typeof block.thinking === "string") {
 			parts.push(block.thinking);
 		}
 	}
@@ -129,8 +130,9 @@ function isLikelyUserGoal(text: string): boolean {
 function classifyAssistantText(text: string): SessionChunkType | undefined {
 	const trimmed = cleanWhitespace(text);
 	if (!trimmed || trimmed.length < 20) return undefined;
+	if (STRUCTURED_SUMMARY_RE.test(trimmed) || CONCLUSION_RE.test(trimmed)) return "assistant_conclusion";
 	if (PLAN_RE.test(trimmed)) return "assistant_plan";
-	if (CONCLUSION_RE.test(trimmed) || trimmed.length >= 120) return "assistant_conclusion";
+	if (trimmed.length >= 120) return "assistant_conclusion";
 	return undefined;
 }
 
@@ -210,10 +212,10 @@ const TYPE_WEIGHTS: Record<SessionChunkType, number> = {
 	branch_summary: 120,
 	compaction_summary: 115,
 	label_checkpoint: 105,
-	user_goal: 95,
+	assistant_conclusion: 102,
 	assistant_plan: 90,
-	assistant_conclusion: 88,
-	tool_finding: 72,
+	tool_finding: 84,
+	user_goal: 82,
 };
 
 export function rankPluckChunks(chunks: SessionChunk[], query?: string): SessionChunk[] {
@@ -224,6 +226,7 @@ export function rankPluckChunks(chunks: SessionChunk[], query?: string): Session
 			let score = TYPE_WEIGHTS[chunk.type];
 			const agePenalty = maxTimestamp > 0 ? Math.min(30, Math.floor((maxTimestamp - chunk.timestamp) / (1000 * 60 * 30))) : 0;
 			score -= agePenalty;
+			if (chunk.type === "assistant_conclusion" && STRUCTURED_SUMMARY_RE.test(chunk.fullText)) score += 18;
 			if (tokens.length > 0) {
 				const haystack = `${chunk.title}\n${chunk.preview}\n${chunk.fullText}\n${chunk.tags.join(" ")}`.toLowerCase();
 				const titleLower = chunk.title.toLowerCase();

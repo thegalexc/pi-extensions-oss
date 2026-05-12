@@ -122,6 +122,44 @@ function makeEntries(): SessionEntry[] {
 	];
 }
 
+function makeEntriesWithThinkingSummary(): SessionEntry[] {
+	return [
+		{
+			type: "message",
+			id: "u1",
+			parentId: null,
+			timestamp: "2026-05-12T01:26:39.329Z",
+			message: {
+				role: "user",
+				content: "Evaluate everything and summarize where we're at / what needs my attention.",
+				timestamp: 1,
+			},
+		},
+		{
+			type: "message",
+			id: "a1",
+			parentId: "u1",
+			timestamp: "2026-05-12T01:29:53.433Z",
+			message: {
+				role: "assistant",
+				content: [
+					{ type: "thinking", thinking: "**Clarifying form options**\n\nI need to note some taxonomy details before I answer." },
+					{
+						type: "text",
+						text: "I reviewed the Google Doc and the live CREO form.\n\n## Where you’re at\n\n**Already filled / basically settled**\n- Permission to share: **Yes**\n\n## What needs your attention\n- Referral/contact details\n\n## Bottom line\nThis needs a decision checklist.",
+					},
+				],
+				provider: "openai-codex",
+				model: "gpt-5.4",
+				api: "openai-codex-responses",
+				usage: { input: 1, output: 1, cacheRead: 0, cacheWrite: 0, totalTokens: 2, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+				stopReason: "stop",
+				timestamp: 2,
+			},
+		},
+	];
+}
+
 test("parsePluckArgs enforces exact session id and optional query", async () => {
 	const { parsePluckArgs } = await loadCoreModule();
 	assert.deepEqual(parsePluckArgs("019dc6a2-0349-748c-a4fb-613ab0276cc7 search terms"), {
@@ -153,6 +191,19 @@ test("rankPluckChunks prefers query matches and breaks ties deterministically", 
 		const current = ranked[index]!;
 		assert.equal(prev.score >= current.score || prev.timestamp >= current.timestamp, true);
 	}
+});
+
+test("extractPluckChunks ignores assistant thinking and preserves the visible summary", async () => {
+	const { extractPluckChunks, rankPluckChunks } = await loadCoreModule();
+	const chunks = extractPluckChunks(makeEntriesWithThinkingSummary());
+	const summary = chunks.find((chunk: any) => chunk.type === "assistant_conclusion");
+	assert.ok(summary);
+	assert.match(summary.fullText, /^I reviewed the Google Doc and the live CREO form\./);
+	assert.doesNotMatch(summary.fullText, /Clarifying form options/);
+	assert.match(summary.preview, /Where you’re at/);
+
+	const ranked = rankPluckChunks(chunks);
+	assert.equal(ranked[0]?.type, "assistant_conclusion");
 });
 
 test("formatImportedPluck truncates and fits within the import budget", async () => {
