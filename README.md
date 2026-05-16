@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -16,6 +16,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`agents-prompts-discover`](#agents-prompts-discover) | Additive prompt discovery bridge for project and global `.agents/prompts` |
 | [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
 | [`compact-update-notice`](#compact-update-notice) | Replace Pi's large startup update box with a compact faded-yellow footer chip |
+| [`working-prompt-snippet`](#working-prompt-snippet) | Show a scrubbed short prompt preview in Pi's transient working message |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | `status` | Package-level footer status chip showing the loaded OSS version |
 
@@ -297,6 +298,29 @@ When Pi detects a new core version, the extension shows `* <version> Available` 
 
 ---
 
+## working-prompt-snippet
+
+`working-prompt-snippet` shows a short, scrubbed preview of the current prompt in Pi's transient working message while the agent is busy.
+
+It is intentionally conservative:
+
+- redacts common secret-looking tokens and credential labels
+- suppresses the preview entirely for obviously sensitive commands like `/login`
+- collapses the prompt to one line and trims it to a compact length
+- clears the working message again when the agent finishes or the session shuts down
+
+### What it is good for
+
+- keeping a little bit of turn context visible while a long response is running
+- avoiding the blank generic `Working...` state during slower tool-heavy turns
+- giving the user better confidence that Pi is working on the intended request
+
+### Important note
+
+The snippet is a convenience preview, not a durable log. It is meant to be safe enough for everyday use, but it still prefers hiding over being clever when prompts look sensitive.
+
+---
+
 ## todo
 
 `todo` is a lightweight in-session todo tracker adapted from Pi's upstream `examples/extensions/todo.ts`.
@@ -371,7 +395,8 @@ pi-extensions-oss/
 │   ├── pluck/
 │   ├── session-notes.ts
 │   ├── status.ts
-│   └── todo.ts
+│   ├── todo.ts
+│   └── working-prompt-snippet.ts
 ├── CHANGELOG.md
 ├── package.json
 ├── tsconfig.json

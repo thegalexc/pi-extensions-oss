@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.33
+
+- add `working-prompt-snippet`, a small extension that shows a scrubbed short preview of the current prompt in Pi's transient working message while the agent is busy
+- redact common credential patterns and suppress the preview entirely for obviously sensitive prompts like `/login` so the convenience hint stays conservative by default
+- document the new extension in the package README and update package metadata for rollout
+
 ## 0.2.32
 
 - preserve distinct `pluck` checkpoints and tool findings even when they share the same visible text, instead of silently collapsing them during dedupe
