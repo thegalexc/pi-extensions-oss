@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start. `lmstudio` adds multi-instance LM Studio provider discovery plus remote load and unload controls. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -14,6 +14,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
 | [`screenshots-picker`](#screenshots-picker) | Browse, stage, and auto-attach recent screenshots from inside Pi |
 | [`project-context`](#project-context) | Load a small configurable set of high-value project files into Pi's system prompt |
+| [`lmstudio`](#lmstudio) | Register LM Studio providers dynamically and control remote model load or unload |
 | [`agents-prompts-discover`](#agents-prompts-discover) | Additive prompt discovery bridge for project and global `.agents/prompts` |
 | [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
 | [`compact-update-notice`](#compact-update-notice) | Replace Pi's large startup update box with a compact faded-yellow footer chip |
@@ -219,6 +220,39 @@ exclude_files:
 ### Important note
 
 This loader is intentionally simple. It handles a small top-level YAML shape only and is meant for startup-critical files, not broad documentation ingestion.
+
+---
+
+## lmstudio
+
+`lmstudio` adds multi-instance LM Studio integration for Pi.
+
+### What it does
+
+- registers one provider per configured LM Studio instance
+- discovers models dynamically from each instance
+- supports remote load and unload through `@lmstudio/sdk`
+- applies optional per-model load profiles before agent use
+- adds a small footer chip like `lms:local,macllm`
+
+### Config
+
+Configuration lives at:
+
+- `~/.pi/agent/lmstudio-instances.json`
+
+### Commands
+
+- `/lmstudio-status`
+- `/lmstudio-refresh`
+- `/lmstudio-load <instance> <model> [profile] [identifier]`
+- `/lmstudio-unload <instance> <identifier>`
+
+### Tool
+
+- `lmstudio_control`
+
+See [`extensions/lmstudio/README.md`](extensions/lmstudio/README.md) for the full config shape and command details.
 
 ---
 
@@ -433,6 +467,7 @@ pi-extensions-oss/
 ├── extensions/
 │   ├── aside/
 │   ├── browser-screenshot.ts
+│   ├── lmstudio/
 │   ├── project-context/
 │   ├── screenshots-picker/
 │   ├── pluck/

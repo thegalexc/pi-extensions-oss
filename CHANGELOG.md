@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.35
+
+- add `lmstudio`, migrated from the private `pi-extensions` package, so multi-instance LM Studio provider discovery and remote load or unload now live on the OSS surface
+- carry over the existing `~/.pi/agent/lmstudio-instances.json` config model and `lmstudio_control` tool so current users can update without changing their setup
+- add the required `@lmstudio/sdk` runtime dependency and update the public package docs for the new extension
+
 ## 0.2.34
 
 - add `project-context`, migrated from the private `pi-extensions` package, to load a small configurable set of high-value project files into Pi's system prompt at session start

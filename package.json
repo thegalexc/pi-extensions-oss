@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.34",
-  "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, project context loading, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
+  "version": "0.2.35",
+  "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, project context loading, LM Studio integration, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -21,7 +21,8 @@
     "playwright",
     "browser-automation",
     "working-message",
-    "project-context"
+    "project-context",
+    "lmstudio"
   ],
   "license": "MIT",
   "type": "module",
@@ -48,6 +49,7 @@
     "basic-ftp": "5.3.0"
   },
   "dependencies": {
+    "@lmstudio/sdk": "^1.5.0",
     "glob": "^11.0.0",
     "playwright": "^1.58.2"
   },
