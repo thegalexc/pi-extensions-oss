@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.34
+
+- add `project-context`, migrated from the private `pi-extensions` package, to load a small configurable set of high-value project files into Pi's system prompt at session start
+- support the existing `.pi/context.yaml` override model so repos can replace, extend, or trim the default file set without per-project extension forks
+- update public package docs and metadata so the generic context-loader now lives on the OSS surface where it belongs
+
 ## 0.2.33
 
 - add `working-prompt-snippet`, a small extension that shows a scrubbed short preview of the current prompt in Pi's transient working message while the agent is busy

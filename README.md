@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
+`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -13,6 +13,7 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`aside`](#aside) | Tool-free side-question overlay with bounded current-session context |
 | [`browser-screenshot`](#browser-screenshot) | Playwright-backed `screenshot` tool with built-in image safety guards |
 | [`screenshots-picker`](#screenshots-picker) | Browse, stage, and auto-attach recent screenshots from inside Pi |
+| [`project-context`](#project-context) | Load a small configurable set of high-value project files into Pi's system prompt |
 | [`agents-prompts-discover`](#agents-prompts-discover) | Additive prompt discovery bridge for project and global `.agents/prompts` |
 | [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
 | [`compact-update-notice`](#compact-update-notice) | Replace Pi's large startup update box with a compact faded-yellow footer chip |
@@ -177,6 +178,47 @@ It is a port of [Graffioh/pi-screenshots-picker](https://github.com/Graffioh/pi-
 - thumbnail previews in image-capable terminals
 
 See [`extensions/screenshots-picker/README.md`](extensions/screenshots-picker/README.md) for configuration, keys, and attribution details. Screenshot sources are configured in `~/.pi/agent/settings.json` under `pi-screenshots.sources`, for example `~/Desktop` when your screenshots use standard macOS or CleanShot naming. Inside Zellij, `/ss` falls back to a text-only safe mode so you can still page through screenshots and stage multiple items without inline thumbnails, even when Zellij does not expose its usual environment variables. You can also force the text-only mode explicitly via settings or `PI_SCREENSHOTS_FORCE_TEXT_MODE=1`. Upstream watch links and rollback criteria live in [`extensions/screenshots-picker/ZELLIJ-UPSTREAM-WATCH.md`](extensions/screenshots-picker/ZELLIJ-UPSTREAM-WATCH.md).
+
+---
+
+## project-context
+
+`project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start.
+
+Default file order:
+
+- `AGENTS.md`
+- `.pi/AGENTS.md`
+- `CLAUDE.md`
+- `Justfile`
+- `README.md`
+
+### Why it exists
+
+Pi already loads `AGENTS.md` and `CLAUDE.md`, but many repos also rely on a nearby command surface or overview file for fast startup context. `project-context` keeps that pattern explicit and configurable without forcing a custom repo-local extension.
+
+### Configuration
+
+Use `.pi/context.yaml` to override the default list.
+
+```yaml
+files:
+  - AGENTS.md
+  - docs/ARCHITECTURE.md
+```
+
+Or extend and trim the defaults:
+
+```yaml
+extra_files:
+  - docs/ARCHITECTURE.md
+exclude_files:
+  - README.md
+```
+
+### Important note
+
+This loader is intentionally simple. It handles a small top-level YAML shape only and is meant for startup-critical files, not broad documentation ingestion.
 
 ---
 
@@ -391,6 +433,7 @@ pi-extensions-oss/
 ├── extensions/
 │   ├── aside/
 │   ├── browser-screenshot.ts
+│   ├── project-context/
 │   ├── screenshots-picker/
 │   ├── pluck/
 │   ├── session-notes.ts

@@ -1,7 +1,7 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.33",
-  "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
+  "version": "0.2.34",
+  "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, project context loading, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -20,7 +20,8 @@
     "screenshot-picker",
     "playwright",
     "browser-automation",
-    "working-message"
+    "working-message",
+    "project-context"
   ],
   "license": "MIT",
   "type": "module",
