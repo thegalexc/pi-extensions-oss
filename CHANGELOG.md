@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.37
+
+- bump Pi development dependencies to `^0.75.3` so local validation tracks the audited Pi 0.75.3 line
+- refresh the lockfile to the current Pi 0.75.3 dependency graph, including the upstream CLI fixes in that patch window
+
 ## 0.2.36
 
 - bump Pi development dependencies to `^0.75.1` so local validation tracks the audited Pi 0.75.1 line
