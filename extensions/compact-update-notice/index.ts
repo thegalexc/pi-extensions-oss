@@ -14,7 +14,7 @@ type UpdateState = {
 	packageCount?: number;
 };
 
-const STATUS_KEY = "update-available";
+const STATUS_KEY = "10-update-available";
 const PATCH_KEY = Symbol.for("pi-extensions-oss.compact-update-notice.patched");
 
 let activeUi: StatusUI | undefined;

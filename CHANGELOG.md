@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.36
+
+- bump Pi development dependencies to `^0.75.1` so local validation tracks the audited Pi 0.75.1 line
+- restore deterministic footer status ordering under Pi 0.75.1 by prefixing the compact update, LM Studio, and OSS version status keys
+- simplify the LM Studio footer chip to `lms (<count>)` so it matches the expected GalexC footer presentation
+
 ## 0.2.35
 
 - add `lmstudio`, migrated from the private `pi-extensions` package, so multi-instance LM Studio provider discovery and remote load or unload now live on the OSS surface

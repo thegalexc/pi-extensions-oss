@@ -291,9 +291,9 @@ function parseArgs(rawArgs: string): string[] {
   return rawArgs.trim().split(/\s+/).filter(Boolean);
 }
 
-function footerStatus(config: Config): string {
-  const enabled = config.instances.filter((item) => item.enabled !== false).map((item) => item.id);
-  return enabled.length ? `lms:${enabled.join(",")}` : "lms:none";
+function footerStatus(config: Config): string | undefined {
+  const enabledCount = config.instances.filter((item) => item.enabled !== false).length;
+  return enabledCount > 0 ? `lms (${enabledCount})` : undefined;
 }
 
 export default async function (pi: ExtensionAPI) {
@@ -342,9 +342,9 @@ export default async function (pi: ExtensionAPI) {
 
   pi.on("session_start", async (_event, ctx) => {
     config = readConfig();
-    ctx.ui.setStatus("lms", footerStatus(config));
+    ctx.ui.setStatus("30-lms", footerStatus(config));
     refreshInBackground(() => {
-      ctx.ui.setStatus("lms", footerStatus(config));
+      ctx.ui.setStatus("30-lms", footerStatus(config));
     });
   });
 
@@ -371,7 +371,7 @@ export default async function (pi: ExtensionAPI) {
     handler: async (_args, ctx) => {
       try {
         const registered = await refreshAll();
-        ctx.ui.setStatus("lms", footerStatus(config));
+        ctx.ui.setStatus("30-lms", footerStatus(config));
         ctx.ui.notify(`Refreshed LM Studio providers: ${registered.join(", ")}`, "info");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
@@ -392,7 +392,7 @@ export default async function (pi: ExtensionAPI) {
         const instance = getInstance(config, instanceId);
         const result = await loadModel(instance, config, model, profile, identifier);
         await refreshAll();
-        ctx.ui.setStatus("lms", footerStatus(config));
+        ctx.ui.setStatus("30-lms", footerStatus(config));
         ctx.ui.notify(`Loaded ${model} on ${instance.id}: ${JSON.stringify(result)}`, "info");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
@@ -413,7 +413,7 @@ export default async function (pi: ExtensionAPI) {
         const instance = getInstance(config, instanceId);
         await unloadModel(instance, identifier);
         await refreshAll();
-        ctx.ui.setStatus("lms", footerStatus(config));
+        ctx.ui.setStatus("30-lms", footerStatus(config));
         ctx.ui.notify(`Unloaded ${identifier} from ${instance.id}`, "info");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
@@ -436,7 +436,7 @@ export default async function (pi: ExtensionAPI) {
   pi.on("model_select", async (event, ctx) => {
     try {
       await maybePrepareModel(event.model.provider, event.model.id, (message) => ctx.ui.notify(message, "info"));
-      ctx.ui.setStatus("lms", footerStatus(config));
+      ctx.ui.setStatus("30-lms", footerStatus(config));
     } catch (error) {
       ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
     }

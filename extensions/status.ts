@@ -13,6 +13,6 @@ const pkg = require("../package.json") as { version: string };
 export default function (pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		if (!ctx.hasUI) return;
-		ctx.ui.setStatus("oss", `oss v${pkg.version}`);
+		ctx.ui.setStatus("40-oss", `oss v${pkg.version}`);
 	});
 }

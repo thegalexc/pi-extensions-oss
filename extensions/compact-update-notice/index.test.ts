@@ -45,17 +45,17 @@ test("patched InteractiveMode version notice writes a footer status instead of r
 		},
 	});
 
-	assert.deepEqual(calls, [{ key: "update-available", text: undefined }]);
+	assert.deepEqual(calls, [{ key: "10-update-available", text: undefined }]);
 
 	(prototype.showNewVersionNotification as (version: string) => void)("0.70.3");
 	assert.deepEqual(calls.at(-1), {
-		key: "update-available",
+		key: "10-update-available",
 		text: "[mdHeading]* 0.70.3 Available",
 	});
 
 	(prototype.showPackageUpdateNotification as (packages: string[]) => void)(["a", "b"]);
 	assert.deepEqual(calls.at(-1), {
-		key: "update-available",
+		key: "10-update-available",
 		text: "[mdHeading]* 0.70.3 Available, 2 pkg updates",
 	});
 });
