@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.40
+
+- fix `compact-update-notice` so Pi startup version checks no longer crash when current Pi passes the newer release object payload instead of a bare version string
+- cover the real upstream release shape with `version`, `packageName`, and `note`, add malformed-object and live-payload regression tests, and assert the patched path bypasses the boxed startup renderer
+- add startup guards around the monkey-patch so upstream Pi prototype drift degrades cleanly instead of taking down Pi at extension load time
+
 ## 0.2.39
 
 - bump Pi development dependencies to `^0.75.5` so local validation tracks the audited Pi 0.75.5 line

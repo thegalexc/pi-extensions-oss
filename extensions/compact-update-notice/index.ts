@@ -14,6 +14,12 @@ type UpdateState = {
 	packageCount?: number;
 };
 
+type ReleaseLike = {
+	version?: unknown;
+	packageName?: unknown;
+	note?: unknown;
+};
+
 const STATUS_KEY = "10-update-available";
 const PATCH_KEY = Symbol.for("pi-extensions-oss.compact-update-notice.patched");
 
@@ -45,6 +51,14 @@ function normalizeVersion(version: string): string {
 	return version.trim().replace(/^v/i, "");
 }
 
+function extractVersion(release: string | ReleaseLike): string | undefined {
+	if (typeof release === "string") return normalizeVersion(release);
+	if (release && typeof release.version === "string") {
+		return normalizeVersion(release.version);
+	}
+	return undefined;
+}
+
 async function resolvePiEntryHref(): Promise<string> {
 	for (const specifier of [
 		"@earendil-works/pi-coding-agent",
@@ -65,17 +79,31 @@ export async function loadInteractiveModePrototype(): Promise<Record<PropertyKey
 	const interactiveModePath = path.join(path.dirname(piEntryPath), "modes", "interactive", "interactive-mode.js");
 	const interactiveModeHref = pathToFileURL(interactiveModePath).href;
 	const mod = (await import(interactiveModeHref)) as {
-		InteractiveMode: { prototype: Record<PropertyKey, unknown> };
+		InteractiveMode?: { prototype?: Record<PropertyKey, unknown> };
 	};
-	return mod.InteractiveMode.prototype;
+	const prototype = mod.InteractiveMode?.prototype;
+	if (!prototype) {
+		throw new Error("InteractiveMode prototype could not be resolved");
+	}
+	return prototype;
+}
+
+export function assertPatchableInteractiveModePrototype(prototype: Record<PropertyKey, unknown>): void {
+	if (typeof prototype.showNewVersionNotification !== "function") {
+		throw new Error("InteractiveMode.showNewVersionNotification is unavailable");
+	}
+	if (typeof prototype.showPackageUpdateNotification !== "function") {
+		throw new Error("InteractiveMode.showPackageUpdateNotification is unavailable");
+	}
 }
 
 export async function installCompactUpdatePatch(): Promise<void> {
 	const prototype = await loadInteractiveModePrototype();
 	if (prototype[PATCH_KEY]) return;
+	assertPatchableInteractiveModePrototype(prototype);
 
-	prototype.showNewVersionNotification = function (newVersion: string) {
-		updateState.version = normalizeVersion(newVersion);
+	prototype.showNewVersionNotification = function (release: string | ReleaseLike) {
+		updateState.version = extractVersion(release);
 		renderStatus();
 	};
 
@@ -87,7 +115,12 @@ export async function installCompactUpdatePatch(): Promise<void> {
 	prototype[PATCH_KEY] = true;
 }
 
-await installCompactUpdatePatch();
+try {
+	await installCompactUpdatePatch();
+} catch (error) {
+	const message = error instanceof Error ? error.message : String(error);
+	console.warn(`[compact-update-notice] Failed to install patch: ${message}`);
+}
 
 export default function compactUpdateNoticeExtension(pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
