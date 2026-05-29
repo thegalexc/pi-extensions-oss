@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.41
+
+- bump Pi development dependencies to `^0.77.0` so local validation tracks the current Pi 0.77 line
+- keep staged screenshots attached only to the next idle prompt, not mid-stream steers or queued follow-ups, by honoring Pi input `streamingBehavior`
+
 ## 0.2.40
 
 - fix `compact-update-notice` so Pi startup version checks no longer crash when current Pi passes the newer release object payload instead of a bare version string

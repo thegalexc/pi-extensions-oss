@@ -408,6 +408,12 @@ export default function screenshotsExtension(pi: ExtensionAPI) {
 			return { action: "continue" as const };
 		}
 
+		// Only attach to a fresh idle prompt. Mid-stream steers and queued
+		// follow-ups should leave staged screenshots intact for the next real turn.
+		if (event.streamingBehavior) {
+			return { action: "continue" as const };
+		}
+
 		// Attach staged images to the user's message
 		const imagesToAttach = stagedImages.map(({ sourcePath: _sourcePath, ...image }) => image);
 		stagedImages = []; // Clear staged images
