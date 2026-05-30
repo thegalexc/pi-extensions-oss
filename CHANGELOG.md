@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.42
+
+- bump Pi development dependencies to `^0.78.0` so local validation tracks the current Pi 0.78 line
+
 ## 0.2.41
 
 - bump Pi development dependencies to `^0.77.0` so local validation tracks the current Pi 0.77 line
