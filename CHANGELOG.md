@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.44
+
+- add `calm-tools`, an opt-in display calming extension for compact read/search tool rows and a single tool activity footer status
+- keep `edit`, `write`, and default `bash` display unchanged so audit-relevant mutation and shell output stay visible unless users explicitly opt in to compact bash
+- bump Pi development dependencies to `^0.79.1` so local validation tracks the current Pi 0.79.1 line
+
 ## 0.2.43
 
 - bump Pi development dependencies to `^0.78.1` so local validation tracks the current Pi 0.78.1 line
