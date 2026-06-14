@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.45
+
+- bump Pi development dependencies to `^0.79.3` so local validation tracks the current Pi 0.79.3 metadata fix
+
 ## 0.2.44
 
 - add `calm-tools`, an opt-in display calming extension for compact read/search tool rows and a single tool activity footer status
