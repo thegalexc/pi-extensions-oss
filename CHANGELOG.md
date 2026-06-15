@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.46
+
+- bump Pi development dependencies to `^0.79.4` so local validation tracks the current Pi 0.79.4 line
+- refresh the lockfile for the Pi 0.79.4 compatibility window
+
 ## 0.2.45
 
 - bump Pi development dependencies to `^0.79.3` so local validation tracks the current Pi 0.79.3 metadata fix
