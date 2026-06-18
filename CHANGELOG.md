@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.47
+
+- bump Pi development dependencies to `^0.79.7` so local validation tracks the current Pi 0.79.7 line
+- refresh package update guidance for Pi 0.79.7, where bare `pi update` updates Pi itself and package refreshes use `pi update --extensions`
+
 ## 0.2.46
 
 - bump Pi development dependencies to `^0.79.4` so local validation tracks the current Pi 0.79.4 line

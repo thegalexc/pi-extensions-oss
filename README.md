@@ -316,7 +316,7 @@ The startup check is intentionally lightweight. It validates the direct `require
 
 - `pi-extensions-oss` now owns the `screenshot` tool.
 - `pi-extensions` no longer ships any browser screenshot extension.
-- If you have both packages installed, update **both** packages before restarting Pi. An older cached `pi-extensions` install can still register `screenshot` and conflict until `pi update` pulls the removal.
+- If you have both packages installed, update **both** packages before restarting Pi. An older cached `pi-extensions` install can still register `screenshot` and conflict until `pi update --extensions` pulls the removal.
 
 The extension is self-contained. It registers the `screenshot` tool, sanitizes malformed image result blocks, and clamps risky captures before they can produce oversized images.
 
@@ -482,10 +482,10 @@ After installation, restart Pi or run `/reload` in an active session.
 ## Update
 
 ```bash
-pi update
+pi update --extensions
 ```
 
-If Pi still reports a `Tool "screenshot" conflicts with ...pi-extensions/...` error after updating, the private package is still on an older cached revision. Update again after the `pi-extensions` removal commit is available, or temporarily remove the stale cached package copy before restarting Pi.
+Use `pi update --all` when you also want to update Pi itself. If Pi still reports a `Tool "screenshot" conflicts with ...pi-extensions/...` error after updating packages, the private package is still on an older cached revision. Update again after the `pi-extensions` removal commit is available, or temporarily remove the stale cached package copy before restarting Pi.
 
 ## Development
 

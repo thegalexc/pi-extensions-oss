@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.46",
+  "version": "0.2.47",
   "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, project context loading, LM Studio integration, calm tool display, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
@@ -62,10 +62,10 @@
     "@sinclair/typebox": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-agent-core": "^0.79.4",
-    "@earendil-works/pi-ai": "^0.79.4",
-    "@earendil-works/pi-coding-agent": "^0.79.4",
-    "@earendil-works/pi-tui": "^0.79.4",
+    "@earendil-works/pi-agent-core": "^0.79.7",
+    "@earendil-works/pi-ai": "^0.79.7",
+    "@earendil-works/pi-coding-agent": "^0.79.7",
+    "@earendil-works/pi-tui": "^0.79.7",
     "@sinclair/typebox": "^0.34.48",
     "@types/node": "^24.5.2",
     "jiti": "^2.7.0",
