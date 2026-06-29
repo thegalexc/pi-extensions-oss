@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.48
+
+- import `/aside` model calls through `@earendil-works/pi-ai/compat` so source typechecking passes on Pi 0.80.2 while the upstream compat shim is available
+- bump Pi development dependencies to `^0.80.2` so local validation tracks the current Pi 0.80 line
+
 ## 0.2.47
 
 - bump Pi development dependencies to `^0.79.7` so local validation tracks the current Pi 0.79.7 line

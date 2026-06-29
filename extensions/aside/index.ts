@@ -1,4 +1,4 @@
-import { complete, type AssistantMessage, type Model, type UserMessage } from "@earendil-works/pi-ai";
+import { complete, type AssistantMessage, type Model, type UserMessage } from "@earendil-works/pi-ai/compat";
 import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@earendil-works/pi-coding-agent";
 import {
 	CURSOR_MARKER,
