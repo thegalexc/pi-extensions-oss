@@ -34,7 +34,7 @@ export default function workingPromptSnippet(pi: ExtensionAPI) {
 		ctx.ui.setWorkingMessage(`Working... ${snippet}`);
 	});
 
-	pi.on("agent_end", async (_event, ctx) => {
+	pi.on("agent_settled", async (_event, ctx) => {
 		if (!ctx.hasUI) return;
 		ctx.ui.setWorkingMessage();
 	});

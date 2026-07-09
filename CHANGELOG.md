@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.49
+
+- bump Pi development dependencies to `^0.80.5` so local validation tracks the current Pi 0.80.5 line
+- clear working prompt and calm tool status on Pi `agent_settled` so queued follow-ups, retries, and compaction retries keep status visible until the run is truly idle
+
 ## 0.2.48
 
 - import `/aside` model calls through `@earendil-works/pi-ai/compat` so source typechecking passes on Pi 0.80.2 while the upstream compat shim is available

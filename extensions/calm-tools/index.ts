@@ -226,7 +226,7 @@ export default function calmTools(pi: ExtensionAPI) {
 			updateStatus(ctx, states);
 		});
 
-		pi.on("agent_end", async (_event, ctx) => {
+		pi.on("agent_settled", async (_event, ctx) => {
 			states.clear();
 			updateStatus(ctx, states);
 		});
