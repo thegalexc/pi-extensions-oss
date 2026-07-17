@@ -42,7 +42,9 @@ Example:
 Notes:
 - `url` and `apiKey` may use env vars with `$VARNAME`
 - provider names become `lmstudio-<instance-id>` unless `providerName` is set
-- provider identities register during extension load, making them available to Pi model-catalog refresh even before session startup
+- provider identities register during extension load, but Pi cache-only startup refreshes never contact LM Studio
+- model discovery runs asynchronously after session startup and through explicit or native network-enabled refreshes
+- unreachable instances retain their last in-memory model list instead of blocking the editor
 
 ## Commands
 

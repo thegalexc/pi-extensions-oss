@@ -12,6 +12,11 @@ const DEFAULT_INSTANCES = [
 
 type JsonRecord = Record<string, unknown>;
 
+type ModelRefreshContext = {
+  allowNetwork: boolean;
+  signal?: AbortSignal;
+};
+
 type InstanceConfig = {
   id: string;
   url: string;
@@ -140,11 +145,14 @@ function inferMaxTokens(contextWindow?: number): number {
   return Math.max(4096, Math.min(32768, Math.floor(contextWindow / 4)));
 }
 
-async function fetchJson(url: string, timeoutMs: number): Promise<JsonRecord> {
+async function fetchJson(url: string, timeoutMs: number, parentSignal?: AbortSignal): Promise<JsonRecord> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const signal = parentSignal
+    ? AbortSignal.any([parentSignal, controller.signal])
+    : controller.signal;
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { signal });
     if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
     return (await response.json()) as JsonRecord;
   } finally {
@@ -152,17 +160,22 @@ async function fetchJson(url: string, timeoutMs: number): Promise<JsonRecord> {
   }
 }
 
-async function fetchModelsForInstance(instance: InstanceConfig, config: Config): Promise<ProviderModelConfig[]> {
+async function fetchModelsForInstance(
+  instance: InstanceConfig,
+  config: Config,
+  signal?: AbortSignal,
+): Promise<ProviderModelConfig[]> {
   const timeoutMs = instance.timeoutMs ?? 5000;
   const v0Url = joinUrl(instance.url, "/api/v0/models");
   const openAiUrl = joinUrl(instance.url, "/v1/models");
 
   let models: ApiV0Model[] = [];
   try {
-    const payload = (await fetchJson(v0Url, timeoutMs)) as ApiV0ModelsResponse;
+    const payload = (await fetchJson(v0Url, timeoutMs, signal)) as ApiV0ModelsResponse;
     models = (payload.data ?? []).filter((model) => (model.type ?? "llm") === "llm");
-  } catch {
-    const payload = (await fetchJson(openAiUrl, timeoutMs)) as OpenAIModelsResponse;
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    const payload = (await fetchJson(openAiUrl, timeoutMs, signal)) as OpenAIModelsResponse;
     models = (payload.data ?? []).map((model) => ({ id: model.id }));
   }
 
@@ -299,7 +312,7 @@ function footerStatus(config: Config): string | undefined {
 export function buildProviderRegistration(
   instance: InstanceConfig,
   models: ProviderModelConfig[],
-  refreshModels: () => Promise<ProviderModelConfig[]>,
+  refreshModels: (context: ModelRefreshContext) => Promise<ProviderModelConfig[]>,
 ) {
   return {
     name: `LM Studio ${instance.id}`,
@@ -320,14 +333,26 @@ export default async function (pi: ExtensionAPI) {
   async function discoverProviderModels(
     instance: InstanceConfig,
     nextConfig: Config,
+    signal?: AbortSignal,
   ): Promise<ProviderModelConfig[]> {
     const providerName = providerNameFor(instance);
-    const models = await fetchModelsForInstance(instance, nextConfig).catch(() => []);
-    providerModels.set(providerName, models);
-    return models;
+    try {
+      const models = await fetchModelsForInstance(instance, nextConfig, signal);
+      providerModels.set(providerName, models);
+      return models;
+    } catch {
+      return providerModels.get(providerName) ?? [];
+    }
   }
 
-  async function refreshProviderModels(providerName: string): Promise<ProviderModelConfig[]> {
+  async function refreshProviderModels(
+    providerName: string,
+    context: ModelRefreshContext,
+  ): Promise<ProviderModelConfig[]> {
+    if (!context.allowNetwork) {
+      return providerModels.get(providerName) ?? [];
+    }
+
     const nextConfig = readConfig();
     config = nextConfig;
     const instance = nextConfig.instances.find(
@@ -337,7 +362,7 @@ export default async function (pi: ExtensionAPI) {
       providerModels.delete(providerName);
       return [];
     }
-    return discoverProviderModels(instance, nextConfig);
+    return discoverProviderModels(instance, nextConfig, context.signal);
   }
 
   function registerInstance(instance: InstanceConfig, models: ProviderModelConfig[]): void {
@@ -347,7 +372,7 @@ export default async function (pi: ExtensionAPI) {
       buildProviderRegistration(
         instance,
         models,
-        () => refreshProviderModels(providerName),
+        (context) => refreshProviderModels(providerName, context),
       ),
     );
     registeredProviders.add(providerName);

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.52
+
+- keep Pi cache-only startup refreshes network-free so unavailable LM Studio instances cannot delay the editor
+- preserve discovered models when later refreshes fail and honor Pi refresh cancellation signals
+- retain asynchronous session-start discovery and explicit LM Studio refresh commands
+
 ## 0.2.51
 
 - register configured LM Studio provider identities during extension load so Pi native model refresh can discover them outside session startup
