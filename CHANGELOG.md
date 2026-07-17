@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.51
+
+- register configured LM Studio provider identities during extension load so Pi native model refresh can discover them outside session startup
+- expose per-provider `refreshModels` callbacks while preserving explicit refresh commands and current background discovery
+- unregister providers removed or disabled by refreshed LM Studio configuration
+
 ## 0.2.50
 
 - bump Pi development dependencies to `^0.80.10` so local validation tracks the audited Pi 0.80.10 line

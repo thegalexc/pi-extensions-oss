@@ -5,7 +5,7 @@ Multi-instance LM Studio extension for Pi.
 ## What it does
 
 - registers one provider per configured LM Studio instance
-- discovers models dynamically from each instance
+- discovers models dynamically from each instance through Pi native provider refresh
 - supports remote load and unload through `@lmstudio/sdk`
 - applies optional per-model load profiles before agent use
 - adds a small footer chip like `lms:local,macllm`
@@ -42,6 +42,7 @@ Example:
 Notes:
 - `url` and `apiKey` may use env vars with `$VARNAME`
 - provider names become `lmstudio-<instance-id>` unless `providerName` is set
+- provider identities register during extension load, making them available to Pi model-catalog refresh even before session startup
 
 ## Commands
 

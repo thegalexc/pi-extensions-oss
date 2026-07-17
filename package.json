@@ -1,6 +1,6 @@
 {
   "name": "pi-extensions-oss",
-  "version": "0.2.50",
+  "version": "0.2.51",
   "description": "Productivity and resilience extensions for Pi: pluck context import, session notes scratchpad, aside side-question overlay, browser screenshot tool, screenshot picker, project context loading, LM Studio integration, calm tool display, compact update status, working prompt snippet, branch-aware todos, and OSS version status",
   "keywords": [
     "pi-package",
@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/compact-update-notice/index.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts extensions/pluck/pluck.test.ts"
+    "test": "node --experimental-strip-types --test --test-concurrency=1 extensions/agents-prompts-discover/index.test.ts extensions/aside/aside.test.ts extensions/compact-update-notice/index.test.ts extensions/library-manifest/index.test.ts extensions/library-manifest/entrypoint.test.ts extensions/lmstudio/index.test.ts extensions/pluck/pluck.test.ts"
   },
   "overrides": {
     "basic-ftp": "5.3.0"

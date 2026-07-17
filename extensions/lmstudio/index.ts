@@ -296,10 +296,79 @@ function footerStatus(config: Config): string | undefined {
   return enabledCount > 0 ? `lms (${enabledCount})` : undefined;
 }
 
+export function buildProviderRegistration(
+  instance: InstanceConfig,
+  models: ProviderModelConfig[],
+  refreshModels: () => Promise<ProviderModelConfig[]>,
+) {
+  return {
+    name: `LM Studio ${instance.id}`,
+    baseUrl: joinUrl(instance.url, "/v1"),
+    api: "openai-completions" as const,
+    apiKey: instance.apiKey ?? "lmstudio",
+    models,
+    refreshModels,
+  };
+}
+
 export default async function (pi: ExtensionAPI) {
   let config = readConfig();
-  let providerModels = new Map<string, ProviderModelConfig[]>();
+  const providerModels = new Map<string, ProviderModelConfig[]>();
+  const registeredProviders = new Set<string>();
   let refreshInFlight: Promise<string[]> | null = null;
+
+  async function discoverProviderModels(
+    instance: InstanceConfig,
+    nextConfig: Config,
+  ): Promise<ProviderModelConfig[]> {
+    const providerName = providerNameFor(instance);
+    const models = await fetchModelsForInstance(instance, nextConfig).catch(() => []);
+    providerModels.set(providerName, models);
+    return models;
+  }
+
+  async function refreshProviderModels(providerName: string): Promise<ProviderModelConfig[]> {
+    const nextConfig = readConfig();
+    config = nextConfig;
+    const instance = nextConfig.instances.find(
+      (item) => item.enabled !== false && providerNameFor(item) === providerName,
+    );
+    if (!instance) {
+      providerModels.delete(providerName);
+      return [];
+    }
+    return discoverProviderModels(instance, nextConfig);
+  }
+
+  function registerInstance(instance: InstanceConfig, models: ProviderModelConfig[]): void {
+    const providerName = providerNameFor(instance);
+    pi.registerProvider(
+      providerName,
+      buildProviderRegistration(
+        instance,
+        models,
+        () => refreshProviderModels(providerName),
+      ),
+    );
+    registeredProviders.add(providerName);
+  }
+
+  function syncProviderRegistrations(nextConfig: Config): InstanceConfig[] {
+    const enabled = nextConfig.instances.filter((item) => item.enabled !== false);
+    const desiredProviders = new Set(enabled.map(providerNameFor));
+    for (const providerName of registeredProviders) {
+      if (desiredProviders.has(providerName)) continue;
+      pi.unregisterProvider(providerName);
+      providerModels.delete(providerName);
+      registeredProviders.delete(providerName);
+    }
+    for (const instance of enabled) {
+      const providerName = providerNameFor(instance);
+      registerInstance(instance, providerModels.get(providerName) ?? []);
+    }
+    config = nextConfig;
+    return enabled;
+  }
 
   function refreshInBackground(onComplete?: () => void): void {
     void refreshAll()
@@ -311,24 +380,14 @@ export default async function (pi: ExtensionAPI) {
 
   async function refreshProvidersOnce(): Promise<string[]> {
     const nextConfig = readConfig();
-    const nextProviderModels = new Map<string, ProviderModelConfig[]>();
-    const registered: string[] = [];
-    for (const instance of nextConfig.instances.filter((item) => item.enabled !== false)) {
-      const providerName = providerNameFor(instance);
-      const models = await fetchModelsForInstance(instance, nextConfig).catch(() => []);
-      pi.registerProvider(providerName, {
-        name: `LM Studio ${instance.id}`,
-        baseUrl: joinUrl(instance.url, "/v1"),
-        api: "openai-completions",
-        apiKey: instance.apiKey ?? "lmstudio",
-        models,
-      });
-      nextProviderModels.set(providerName, models);
-      registered.push(providerName);
-    }
-    config = nextConfig;
-    providerModels = nextProviderModels;
-    return registered;
+    const enabled = syncProviderRegistrations(nextConfig);
+    await Promise.all(
+      enabled.map(async (instance) => {
+        const models = await discoverProviderModels(instance, nextConfig);
+        registerInstance(instance, models);
+      }),
+    );
+    return enabled.map(providerNameFor);
   }
 
   async function refreshAll(): Promise<string[]> {
@@ -339,6 +398,10 @@ export default async function (pi: ExtensionAPI) {
     }
     return refreshInFlight;
   }
+
+  // Register configured provider identities during extension load so Pi's
+  // native model refresh can discover them even before a session starts.
+  syncProviderRegistrations(config);
 
   pi.on("session_start", async (_event, ctx) => {
     config = readConfig();
