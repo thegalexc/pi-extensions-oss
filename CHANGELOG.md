@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.53
+
+- prevent Pi footer model refreshes from joining active LM Studio discovery, so the first interactive prompt is accepted immediately when an instance is unavailable
+
 ## 0.2.52
 
 - keep Pi cache-only startup refreshes network-free so unavailable LM Studio instances cannot delay the editor

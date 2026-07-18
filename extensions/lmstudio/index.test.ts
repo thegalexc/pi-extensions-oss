@@ -37,6 +37,70 @@ test("buildProviderRegistration exposes native model refresh", async () => {
   assert.equal(refreshCalls, 1);
 });
 
+test("session background discovery keeps native refresh nonblocking", async () => {
+  const { default: extension } = await loadModule();
+  const originalExistsSync = fs.existsSync;
+  const originalReadFileSync = fs.readFileSync;
+  const originalFetch = globalThis.fetch;
+  const providerCalls: Array<{ name: string; config: any }> = [];
+  const handlers = new Map<string, (...args: any[]) => unknown>();
+  let fetchCalls = 0;
+  let releaseFetch!: () => void;
+  const fetchGate = new Promise<void>((resolve) => {
+    releaseFetch = resolve;
+  });
+
+  fs.existsSync = (() => true) as typeof fs.existsSync;
+  fs.readFileSync = (() => JSON.stringify({
+    instances: [{ id: "test", url: "http://lmstudio.test:1234", enabled: true }],
+  })) as unknown as typeof fs.readFileSync;
+  globalThis.fetch = (async () => {
+    fetchCalls += 1;
+    await fetchGate;
+    return new Response(JSON.stringify({
+      data: [{ id: "model-a", type: "llm", max_context_length: 32768 }],
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  }) as typeof fetch;
+
+  const pi = {
+    registerProvider(name: string, config: any) {
+      providerCalls.push({ name, config });
+    },
+    unregisterProvider() {},
+    registerCommand() {},
+    registerTool() {},
+    on(name: string, handler: (...args: any[]) => unknown) {
+      handlers.set(name, handler);
+    },
+  } as any;
+
+  try {
+    await extension(pi);
+    await handlers.get("session_start")?.({}, {
+      ui: { setStatus() {} },
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(fetchCalls, 1);
+
+    const refreshPromise = providerCalls[0].config.refreshModels({ allowNetwork: true });
+    const outcome = await Promise.race([
+      refreshPromise.then(() => "resolved"),
+      new Promise<string>((resolve) => setTimeout(() => resolve("blocked"), 50)),
+    ]);
+    assert.equal(outcome, "resolved");
+    assert.equal(fetchCalls, 1);
+
+    releaseFetch();
+    await refreshPromise;
+    await new Promise((resolve) => setImmediate(resolve));
+  } finally {
+    releaseFetch();
+    fs.existsSync = originalExistsSync;
+    fs.readFileSync = originalReadFileSync;
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("extension load registers providers for native refresh and removes disabled providers", async () => {
   const { default: extension } = await loadModule();
   const originalExistsSync = fs.existsSync;

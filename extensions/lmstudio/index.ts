@@ -349,7 +349,7 @@ export default async function (pi: ExtensionAPI) {
     providerName: string,
     context: ModelRefreshContext,
   ): Promise<ProviderModelConfig[]> {
-    if (!context.allowNetwork) {
+    if (!context.allowNetwork || refreshInFlight) {
       return providerModels.get(providerName) ?? [];
     }
 
