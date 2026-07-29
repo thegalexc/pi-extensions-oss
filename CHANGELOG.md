@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.54
+
+- bump Pi development dependencies to `^0.82.1` so local validation tracks the audited Pi 0.82.1 line
+
 ## 0.2.53
 
 - prevent Pi footer model refreshes from joining active LM Studio discovery, so the first interactive prompt is accepted immediately when an instance is unavailable
