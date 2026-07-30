@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.55
+
+- align Pi development dependencies with 0.83.0 and use Pi's canonical bundled `typebox` package
+- remove the legacy `@sinclair/typebox` peer and development dependency
+
 ## 0.2.54
 
 - bump Pi development dependencies to `^0.82.1` so local validation tracks the audited Pi 0.82.1 line

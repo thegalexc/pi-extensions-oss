@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { LMStudioClient } from "@lmstudio/sdk";
 import type { ExtensionAPI, ProviderModelConfig } from "@earendil-works/pi-coding-agent";
-import { Type } from "@sinclair/typebox";
+import { Type } from "typebox";
 
 const CONFIG_PATH = path.join(os.homedir(), ".pi", "agent", "lmstudio-instances.json");
 const DEFAULT_INSTANCES = [
