@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.56
+
+- align Pi development dependencies and lockfile with the audited 0.84.0 compatibility window
+
 ## 0.2.55
 
 - align Pi development dependencies with 0.83.0 and use Pi's canonical bundled `typebox` package
