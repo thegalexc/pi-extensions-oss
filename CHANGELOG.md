@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.58
+
+- retire `compact-update-notice` because Pi 0.84.3 moved the CLI to a bundled runtime that cannot be safely modified through the extension's private prototype patch
+- align Pi development dependencies and lockfile with the audited 0.84.4 compatibility window
+
 ## 0.2.57
 
 - align Pi development dependencies and lockfile with the audited 0.84.2 compatibility window

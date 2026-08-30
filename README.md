@@ -2,7 +2,7 @@
 
 Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 
-`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start. `lmstudio` adds multi-instance LM Studio provider discovery plus remote load and unload controls. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `compact-update-notice` turns Pi's large boxed startup update warning into a small faded-yellow footer chip. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `calm-tools` optionally compacts noisy read/search tool rows and adds a single tool activity status chip. `status` adds an `oss v<version>` footer status chip.
+`pluck` lets you browse another persisted Pi session by exact id and import only the useful excerpts into the current turn. `session-notes` keeps important context visible above the editor without spending context tokens. `aside` adds a token-efficient side-question overlay that borrows only a bounded slice of the current session. `browser-screenshot` adds a Playwright-backed `screenshot` tool with built-in safety guards. `screenshots-picker` lets you browse, stage, and auto-attach recent screenshots. `project-context` loads a small configurable set of high-value project files into Pi's system prompt at session start. `lmstudio` adds multi-instance LM Studio provider discovery plus remote load and unload controls. `agents-prompts-discover` bridges installed prompts from `.agents/prompts` into Pi command discovery. `library-manifest` warns when a repo's required library-managed artifacts are missing at session start. `working-prompt-snippet` adds a scrubbed short prompt preview to Pi's transient working message while the agent is busy. `todo` adds a lightweight branch-aware session todo primitive. `calm-tools` optionally compacts noisy read/search tool rows and adds a single tool activity status chip. `status` adds an `oss v<version>` footer status chip.
 
 ## Extensions
 
@@ -17,7 +17,6 @@ Productivity and resilience extensions for the [Pi coding agent](https://pi.ai).
 | [`lmstudio`](#lmstudio) | Register LM Studio providers dynamically and control remote model load or unload |
 | [`agents-prompts-discover`](#agents-prompts-discover) | Additive prompt discovery bridge for project and global `.agents/prompts` |
 | [`library-manifest`](#library-manifest) | Warn when a repo's required library-managed artifacts are missing or colliding |
-| [`compact-update-notice`](#compact-update-notice) | Replace Pi's large startup update box with a compact faded-yellow footer chip |
 | [`working-prompt-snippet`](#working-prompt-snippet) | Show a scrubbed short prompt preview in Pi's transient working message |
 | [`todo`](#todo) | Lightweight branch-aware session todo list for the model and the user |
 | [`calm-tools`](#calm-tools) | Optional compact display for noisy read/search tool rows plus a tool activity status chip |
@@ -348,30 +347,6 @@ The extension is self-contained. It registers the `screenshot` tool, sanitizes m
 | image payload above inline limit | file is saved to disk and a text result is returned instead of inline image data |
 
 The extension uses a conservative `7500px` image-height threshold to stay under common model limits with headroom.
-
----
-
-## compact-update-notice
-
-`compact-update-notice` replaces Pi's default boxed startup update warning with a compact footer status in the same softer yellow family Pi uses for heading text.
-
-When Pi detects a new core version, the extension shows `* <version> Available` in the footer. If package updates are also pending, it folds them into the same status area instead of opening another large startup block.
-
-### Before and after
-
-#### Default startup box
-
-![Compact update notice default boxed warning](public/compact-update-notice-startup-box.png)
-
-#### Compact footer chip
-
-![Compact update notice footer chip](public/compact-update-notice-footer-chip.png)
-
-### What it is good for
-
-- keeping startup noise low in fresh sessions
-- preserving update visibility without stealing vertical space
-- matching Pi's lighter heading color instead of the louder warning box
 
 ---
 
