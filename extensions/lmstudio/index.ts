@@ -11,6 +11,7 @@ const DEFAULT_INSTANCES = [
 ];
 
 type JsonRecord = Record<string, unknown>;
+type ProviderChatModelConfig = Extract<ProviderModelConfig, { type?: "chat" }>;
 
 type ModelRefreshContext = {
   allowNetwork: boolean;
@@ -26,7 +27,7 @@ type InstanceConfig = {
   timeoutMs?: number;
 };
 
-type ModelOverride = Partial<Pick<ProviderModelConfig, "name" | "reasoning" | "contextWindow" | "maxTokens" | "input">>;
+type ModelOverride = Partial<Pick<ProviderChatModelConfig, "name" | "reasoning" | "contextWindow" | "maxTokens" | "input">>;
 
 type LoadProfile = {
   contextLength?: number;
@@ -164,7 +165,7 @@ async function fetchModelsForInstance(
   instance: InstanceConfig,
   config: Config,
   signal?: AbortSignal,
-): Promise<ProviderModelConfig[]> {
+): Promise<ProviderChatModelConfig[]> {
   const timeoutMs = instance.timeoutMs ?? 5000;
   const v0Url = joinUrl(instance.url, "/api/v0/models");
   const openAiUrl = joinUrl(instance.url, "/v1/models");
@@ -197,11 +198,11 @@ async function fetchModelsForInstance(
         supportsDeveloperRole: false,
         supportsReasoningEffort: false,
       },
-    } satisfies ProviderModelConfig;
+    } satisfies ProviderChatModelConfig;
   });
 }
 
-function summarizeModels(models: ProviderModelConfig[]): string {
+function summarizeModels(models: ProviderChatModelConfig[]): string {
   if (models.length === 0) return "none";
   return models.map((model) => model.id).join(", ");
 }
@@ -311,8 +312,8 @@ function footerStatus(config: Config): string | undefined {
 
 export function buildProviderRegistration(
   instance: InstanceConfig,
-  models: ProviderModelConfig[],
-  refreshModels: (context: ModelRefreshContext) => Promise<ProviderModelConfig[]>,
+  models: ProviderChatModelConfig[],
+  refreshModels: (context: ModelRefreshContext) => Promise<ProviderChatModelConfig[]>,
 ) {
   return {
     name: `LM Studio ${instance.id}`,
@@ -326,7 +327,7 @@ export function buildProviderRegistration(
 
 export default async function (pi: ExtensionAPI) {
   let config = readConfig();
-  const providerModels = new Map<string, ProviderModelConfig[]>();
+  const providerModels = new Map<string, ProviderChatModelConfig[]>();
   const registeredProviders = new Set<string>();
   let refreshInFlight: Promise<string[]> | null = null;
 
@@ -334,7 +335,7 @@ export default async function (pi: ExtensionAPI) {
     instance: InstanceConfig,
     nextConfig: Config,
     signal?: AbortSignal,
-  ): Promise<ProviderModelConfig[]> {
+  ): Promise<ProviderChatModelConfig[]> {
     const providerName = providerNameFor(instance);
     try {
       const models = await fetchModelsForInstance(instance, nextConfig, signal);
@@ -348,7 +349,7 @@ export default async function (pi: ExtensionAPI) {
   async function refreshProviderModels(
     providerName: string,
     context: ModelRefreshContext,
-  ): Promise<ProviderModelConfig[]> {
+  ): Promise<ProviderChatModelConfig[]> {
     if (!context.allowNetwork || refreshInFlight) {
       return providerModels.get(providerName) ?? [];
     }
@@ -365,7 +366,7 @@ export default async function (pi: ExtensionAPI) {
     return discoverProviderModels(instance, nextConfig, context.signal);
   }
 
-  function registerInstance(instance: InstanceConfig, models: ProviderModelConfig[]): void {
+  function registerInstance(instance: InstanceConfig, models: ProviderChatModelConfig[]): void {
     const providerName = providerNameFor(instance);
     pi.registerProvider(
       providerName,
