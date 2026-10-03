@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.59
+
+- align Pi development dependencies and lockfile with the audited 1.0.1 compatibility window
+- use Pi's tool renderer registry for `calm-tools` instead of re-registering built-in tools
+
 ## 0.2.58
 
 - retire `compact-update-notice` because Pi 0.84.3 moved the CLI to a bundled runtime that cannot be safely modified through the extension's private prototype patch

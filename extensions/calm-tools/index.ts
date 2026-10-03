@@ -1,15 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import {
-	createBashTool,
-	createFindTool,
-	createGrepTool,
-	createLsTool,
-	createReadTool,
-	type ExtensionAPI,
-	type Theme,
-} from "@earendil-works/pi-coding-agent";
+import { type ExtensionAPI, type Theme } from "@earendil-works/pi-coding-agent";
 import { Text, truncateToWidth } from "@earendil-works/pi-tui";
 
 const SETTINGS_KEY = "calmTools";
@@ -29,10 +21,6 @@ interface ToolState {
 	name: string;
 	status: "running" | "success" | "error";
 }
-
-type BuiltInTool = Record<string, any>;
-
-type ToolFactory = (cwd: string) => BuiltInTool;
 
 function readConfig(): CalmToolsConfig {
 	const settingsPath = join(homedir(), ".pi", "agent", "settings.json");
@@ -152,24 +140,6 @@ function renderToolResult(
 	return new Text(`${header}\n${theme.fg("toolOutput", resultText(result))}`, 0, 0);
 }
 
-function copyToolWithRenderers(factory: ToolFactory, cwd: string) {
-	const original = factory(cwd) as BuiltInTool & Record<string, unknown>;
-	return {
-		...original,
-		renderCall(args: unknown, theme: Theme) {
-			return renderToolCall(original.name, args, theme);
-		},
-		renderResult(
-			result: { content?: Array<{ type?: string; text?: string; mimeType?: string }> },
-			options: { expanded: boolean; isPartial: boolean },
-			theme: Theme,
-			context: { args?: unknown; isError?: boolean },
-		) {
-			return renderToolResult(original.name, result, options, theme, context);
-		},
-	};
-}
-
 function updateStatus(ctx: { hasUI: boolean; ui: { setStatus: (key: string, value?: string) => void; theme: Theme } }, states: Map<string, ToolState>) {
 	if (!ctx.hasUI) return;
 	if (states.size === 0) {
@@ -196,20 +166,19 @@ export default function calmTools(pi: ExtensionAPI) {
 	if (config.enabled !== true) return;
 
 	const states = new Map<string, ToolState>();
-	const compactTools = getCompactTools(config);
-	const factories: Record<string, ToolFactory> = {
-		read: createReadTool,
-		grep: createGrepTool,
-		find: createFindTool,
-		ls: createLsTool,
-		bash: createBashTool,
-	};
+	const compactTools = new Set(getCompactTools(config));
 
-	for (const toolName of compactTools) {
-		const factory = factories[toolName];
-		if (!factory) continue;
-		pi.registerTool(copyToolWithRenderers(factory, process.cwd()) as any);
-	}
+	pi.registerToolRenderer((toolName) => {
+		if (!compactTools.has(toolName)) return undefined;
+		return {
+			renderCall(args, theme) {
+				return renderToolCall(toolName, args, theme);
+			},
+			renderResult(result, options, theme, context) {
+				return renderToolResult(toolName, result, options, theme, context);
+			},
+		};
+	});
 
 	if (config.statusLine !== false) {
 		pi.on("tool_execution_start", async (event, ctx) => {

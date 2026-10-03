@@ -405,7 +405,7 @@ It is intentionally small. The model gets a `todo` tool for `list`, `add`, `togg
 
 `calm-tools` is an opt-in display calming extension for tool-heavy Pi turns.
 
-When enabled, it wraps selected built-in tools with the same execution behavior and a calmer renderer. Collapsed rows show a short status line, while `Ctrl+O` expands to the stored text content from the tool result. It also adds one footer status chip summarizing tool activity, for example `tools: read 3 · grep 1 · running grep`.
+When enabled, it overrides rendering for selected built-in tools without replacing their execution behavior. Collapsed rows show a short status line, while `Ctrl+O` expands to the stored text content from the tool result. It also adds one footer status chip summarizing tool activity, for example `tools: read 3 · grep 1 · running grep`.
 
 ### Configuration
 
