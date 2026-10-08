@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.62
+
+- align Pi development dependencies and lockfile with the audited 1.1.0 compatibility window
+
 ## 0.2.61
 
 - align Pi development dependencies and lockfile with the audited 1.0.4 compatibility window
