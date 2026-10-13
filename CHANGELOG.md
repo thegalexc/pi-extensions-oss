@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.64
+
+- keep the `working-prompt-snippet` regression test outside the published extension discovery directory so Pi does not load it as an extension
+
 ## 0.2.63
 
 - support Pi 1.2 custom-message runs in `working-prompt-snippet` without reading a missing user prompt

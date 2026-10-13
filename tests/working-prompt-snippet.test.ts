@@ -3,7 +3,7 @@ import test from "node:test";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 async function registerBeforeAgentStart() {
-	const { default: workingPromptSnippet } = await import(new URL("./working-prompt-snippet.ts", import.meta.url).href);
+	const { default: workingPromptSnippet } = await import(new URL("../extensions/working-prompt-snippet.ts", import.meta.url).href);
 	let handler: ((event: any, ctx: any) => Promise<void>) | undefined;
 	workingPromptSnippet({
 		on(name: string, candidate: typeof handler) {
