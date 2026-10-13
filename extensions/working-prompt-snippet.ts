@@ -26,6 +26,10 @@ function buildSnippet(prompt: string): string | undefined {
 export default function workingPromptSnippet(pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event, ctx) => {
 		if (!ctx.hasUI) return;
+		if (event.messageType !== "user") {
+			ctx.ui.setWorkingMessage();
+			return;
+		}
 		const snippet = buildSnippet(event.prompt);
 		if (!snippet) {
 			ctx.ui.setWorkingMessage();

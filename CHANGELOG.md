@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.63
+
+- support Pi 1.2 custom-message runs in `working-prompt-snippet` without reading a missing user prompt
+- align Pi development dependencies and lockfile with the audited 1.2.0 compatibility window
+
 ## 0.2.62
 
 - align Pi development dependencies and lockfile with the audited 1.1.0 compatibility window
