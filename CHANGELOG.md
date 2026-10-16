@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.65
+
+- align Pi development dependencies and lockfile with the audited 1.3.0 compatibility window
+
 ## 0.2.64
 
 - keep the `working-prompt-snippet` regression test outside the published extension discovery directory so Pi does not load it as an extension
