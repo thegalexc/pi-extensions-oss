@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.68
+
+- align Pi development dependencies and lockfile with the audited 1.5.2 compatibility window
+- verify all 38 extension tests and typechecking against Pi 1.5.2
+
 ## 0.2.67
 
 - align Pi development dependencies and lockfile with the audited 1.5.0 compatibility window
